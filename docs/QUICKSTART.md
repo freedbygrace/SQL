@@ -2,6 +2,29 @@
 
 ## 🚀 Get Up and Running in 5 Minutes
 
+### Step 0: Install Dependencies (Optional - 5 minutes)
+
+**If you don't have Docker, PostgreSQL client (psql), or other required tools:**
+
+```bash
+# Make script executable
+chmod +x scripts/install-dependencies.sh
+
+# Run the installer
+./scripts/install-dependencies.sh
+```
+
+**What this installs:**
+- PostgreSQL client (psql)
+- Docker & Docker Compose
+- Utility packages (curl, wget, git)
+
+**Supported OS:** Ubuntu, Debian, CentOS, RHEL, Fedora, Arch Linux, macOS
+
+**Note:** All other scripts will automatically check for dependencies and prompt you to install them if missing.
+
+---
+
 ### Step 1: Start Docker Containers (1 minute)
 
 ```bash

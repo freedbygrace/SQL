@@ -83,16 +83,39 @@ kpi_definitions → daily_metrics → trend_analysis
 
 ### Prerequisites
 - Docker and Docker Compose
+- PostgreSQL client (psql)
 - 8GB RAM minimum
 - 20GB disk space
 
+**🔧 Don't have the prerequisites?** Run the automatic installer:
+```bash
+chmod +x scripts/install-dependencies.sh
+./scripts/install-dependencies.sh
+```
+
+This will automatically install:
+- ✅ PostgreSQL client (psql)
+- ✅ Docker & Docker Compose
+- ✅ Required utilities (curl, wget, git)
+
+**Supported OS:** Ubuntu, Debian, CentOS, RHEL, Fedora, Arch Linux, macOS
+
+---
+
 ### 1. Clone the Repository
 ```bash
-git clone https://github.com/yourusername/SQL.git
+git clone https://github.com/freedbygrace/SQL.git
 cd SQL
 ```
 
-### 2. Start the Database
+### 2. Install Dependencies (Optional)
+```bash
+# Only if you don't have Docker, psql, etc.
+chmod +x scripts/install-dependencies.sh
+./scripts/install-dependencies.sh
+```
+
+### 3. Start the Database
 ```bash
 docker-compose up -d
 ```
@@ -101,13 +124,15 @@ This starts:
 - **PostgreSQL 16** on port `5432`
 - **DB-UI** web interface on port `3000`
 
-### 3. Initialize the Schema
+### 4. Initialize the Schema
 ```bash
 chmod +x scripts/setup-database.sh
 ./scripts/setup-database.sh
 ```
 
-### 4. Generate Test Data
+**Note:** The script will automatically check for required dependencies and prompt you to install them if missing.
+
+### 5. Generate Test Data
 ```bash
 chmod +x data/generate_data.sh
 ./data/generate_data.sh
@@ -115,7 +140,7 @@ chmod +x data/generate_data.sh
 
 ⏱️ **Note:** Data generation takes 15-30 minutes depending on your system.
 
-### 5. Access the Database
+### 6. Access the Database
 
 **Option A: DB-UI Web Interface**
 ```

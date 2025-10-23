@@ -22,10 +22,42 @@ DB_NAME="${POSTGRES_DB:-business_analytics}"
 DB_USER="${POSTGRES_USER:-data_analyst}"
 DB_PASSWORD="${POSTGRES_PASSWORD:-SecurePass123!}"
 
+# Script directory
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
 echo -e "${BLUE}============================================================================${NC}"
 echo -e "${BLUE}Business Analytics Database - Verification${NC}"
 echo -e "${BLUE}============================================================================${NC}"
 echo ""
+
+# Check for required dependencies
+check_dependencies() {
+    local missing_deps=()
+
+    # Check for psql
+    if ! command -v psql >/dev/null 2>&1; then
+        missing_deps+=("psql (PostgreSQL client)")
+    fi
+
+    # Check for docker
+    if ! command -v docker >/dev/null 2>&1; then
+        missing_deps+=("docker")
+    fi
+
+    if [ ${#missing_deps[@]} -gt 0 ]; then
+        echo -e "${RED}✗ Missing required dependencies:${NC}"
+        for dep in "${missing_deps[@]}"; do
+            echo -e "  - ${YELLOW}$dep${NC}"
+        done
+        echo ""
+        echo -e "${YELLOW}Run the dependency installer:${NC}"
+        echo -e "  ${GREEN}./scripts/install-dependencies.sh${NC}"
+        exit 1
+    fi
+}
+
+# Run dependency check
+check_dependencies
 
 # Function to execute SQL and get result
 execute_sql() {

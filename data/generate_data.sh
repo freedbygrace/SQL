@@ -32,6 +32,10 @@ NUM_CARDS=200000
 NUM_TRANSACTIONS=5000000
 FRAUD_PERCENTAGE=7  # 7% of transactions will be fraudulent
 
+# Script directory
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
+
 echo -e "${BLUE}============================================================================${NC}"
 echo -e "${BLUE}Business Analytics Database - Data Generation${NC}"
 echo -e "${BLUE}============================================================================${NC}"
@@ -43,6 +47,49 @@ echo -e "Cards: ${GREEN}$NUM_CARDS${NC}"
 echo -e "Transactions: ${GREEN}$NUM_TRANSACTIONS${NC} (${YELLOW}${FRAUD_PERCENTAGE}% fraudulent${NC})"
 echo -e "${BLUE}============================================================================${NC}"
 echo ""
+
+# Check for required dependencies
+check_dependencies() {
+    local missing_deps=()
+
+    # Check for psql
+    if ! command -v psql >/dev/null 2>&1; then
+        missing_deps+=("psql (PostgreSQL client)")
+    fi
+
+    if [ ${#missing_deps[@]} -gt 0 ]; then
+        echo -e "${RED}✗ Missing required dependencies:${NC}"
+        for dep in "${missing_deps[@]}"; do
+            echo -e "  - ${YELLOW}$dep${NC}"
+        done
+        echo ""
+        echo -e "${YELLOW}Would you like to run the dependency installer? (y/n)${NC}"
+        read -r response
+        if [[ "$response" =~ ^[Yy]$ ]]; then
+            if [ -f "$PROJECT_ROOT/scripts/install-dependencies.sh" ]; then
+                chmod +x "$PROJECT_ROOT/scripts/install-dependencies.sh"
+                "$PROJECT_ROOT/scripts/install-dependencies.sh"
+                echo ""
+                echo -e "${GREEN}Dependencies installed. Please re-run this script.${NC}"
+                exit 0
+            else
+                echo -e "${RED}✗ install-dependencies.sh not found${NC}"
+                echo -e "${YELLOW}Please install PostgreSQL client manually${NC}"
+                exit 1
+            fi
+        else
+            echo -e "${RED}✗ Cannot proceed without required dependencies${NC}"
+            exit 1
+        fi
+    fi
+
+    echo -e "${GREEN}✓ All required dependencies are installed${NC}"
+    echo ""
+}
+
+# Run dependency check
+check_dependencies
+
 echo -e "${RED}WARNING: This will DELETE all existing data and regenerate it!${NC}"
 echo -e "${YELLOW}Press Ctrl+C within 5 seconds to cancel...${NC}"
 sleep 5

@@ -36,6 +36,61 @@ echo -e "User: ${GREEN}$DB_USER${NC}"
 echo -e "${BLUE}============================================================================${NC}"
 echo ""
 
+# Check for required dependencies
+check_dependencies() {
+    local missing_deps=()
+
+    # Check for psql
+    if ! command -v psql >/dev/null 2>&1; then
+        missing_deps+=("psql (PostgreSQL client)")
+    fi
+
+    # Check for docker
+    if ! command -v docker >/dev/null 2>&1; then
+        missing_deps+=("docker")
+    fi
+
+    # Check for docker-compose or docker compose
+    if ! command -v docker-compose >/dev/null 2>&1 && ! docker compose version >/dev/null 2>&1; then
+        missing_deps+=("docker-compose")
+    fi
+
+    if [ ${#missing_deps[@]} -gt 0 ]; then
+        echo -e "${RED}✗ Missing required dependencies:${NC}"
+        for dep in "${missing_deps[@]}"; do
+            echo -e "  - ${YELLOW}$dep${NC}"
+        done
+        echo ""
+        echo -e "${YELLOW}Would you like to run the dependency installer? (y/n)${NC}"
+        read -r response
+        if [[ "$response" =~ ^[Yy]$ ]]; then
+            if [ -f "$SCRIPT_DIR/install-dependencies.sh" ]; then
+                chmod +x "$SCRIPT_DIR/install-dependencies.sh"
+                "$SCRIPT_DIR/install-dependencies.sh"
+                echo ""
+                echo -e "${GREEN}Dependencies installed. Please re-run this script.${NC}"
+                exit 0
+            else
+                echo -e "${RED}✗ install-dependencies.sh not found${NC}"
+                echo -e "${YELLOW}Please install the following manually:${NC}"
+                for dep in "${missing_deps[@]}"; do
+                    echo -e "  - $dep"
+                done
+                exit 1
+            fi
+        else
+            echo -e "${RED}✗ Cannot proceed without required dependencies${NC}"
+            exit 1
+        fi
+    fi
+
+    echo -e "${GREEN}✓ All required dependencies are installed${NC}"
+    echo ""
+}
+
+# Run dependency check
+check_dependencies
+
 # Function to execute SQL command
 execute_sql() {
     PGPASSWORD=$DB_PASSWORD psql -h $DB_HOST -p $DB_PORT -U $DB_USER -d $DB_NAME -c "$1" 2>&1
