@@ -1,9 +1,9 @@
 #!/bin/bash
 
 # ============================================================================
-# Financial Fraud Detection - Data Generation Script - IDEMPOTENT
+# Business Analytics - Data Generation Script - IDEMPOTENT
 # ============================================================================
-# Generates realistic test data with embedded fraud patterns
+# Generates realistic test data for business analytics and reporting
 # This script is IDEMPOTENT - it will clear and regenerate all data
 # ============================================================================
 
@@ -19,8 +19,8 @@ NC='\033[0m' # No Color
 # Configuration
 DB_HOST="${POSTGRES_HOST:-localhost}"
 DB_PORT="${POSTGRES_PORT:-5432}"
-DB_NAME="${POSTGRES_DB:-fraud_detection}"
-DB_USER="${POSTGRES_USER:-fraud_analyst}"
+DB_NAME="${POSTGRES_DB:-business_analytics}"
+DB_USER="${POSTGRES_USER:-data_analyst}"
 DB_PASSWORD="${POSTGRES_PASSWORD:-SecurePass123!}"
 
 # Data volumes
@@ -33,7 +33,7 @@ NUM_TRANSACTIONS=5000000
 FRAUD_PERCENTAGE=7  # 7% of transactions will be fraudulent
 
 echo -e "${BLUE}============================================================================${NC}"
-echo -e "${BLUE}Financial Fraud Detection Database - Data Generation${NC}"
+echo -e "${BLUE}Business Analytics Database - Data Generation${NC}"
 echo -e "${BLUE}============================================================================${NC}"
 echo -e "Target Database: ${GREEN}$DB_NAME@$DB_HOST:$DB_PORT${NC}"
 echo -e "Customers: ${GREEN}$NUM_CUSTOMERS${NC}"
@@ -62,7 +62,7 @@ execute_sql_file() {
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 # Clear existing data (preserve reference tables)
-echo -e "${YELLOW}[0/9] Clearing existing data...${NC}"
+echo -e "${YELLOW}[0/15] Clearing existing data...${NC}"
 execute_sql "TRUNCATE TABLE audit_log CASCADE;"
 execute_sql "TRUNCATE TABLE suspicious_activity_reports CASCADE;"
 execute_sql "TRUNCATE TABLE case_alerts CASCADE;"
@@ -83,12 +83,12 @@ echo -e "${GREEN}✓ Existing data cleared${NC}"
 echo ""
 
 # Load geographic reference data
-echo -e "${YELLOW}[1/9] Loading geographic reference data...${NC}"
+echo -e "${YELLOW}[1/15] Loading geographic reference data...${NC}"
 execute_sql_file "$SCRIPT_DIR/reference/load_geographic_data.sql" > /dev/null
 echo -e "${GREEN}✓ Geographic data loaded (100 US cities, 210 world cities)${NC}"
 echo ""
 
-echo -e "${YELLOW}[2/9] Generating Customers...${NC}"
+echo -e "${YELLOW}[2/15] Generating Customers...${NC}"
 cat > /tmp/generate_customers.sql << 'EOF'
 -- Generate customers with realistic geographic data
 INSERT INTO customers (
@@ -130,7 +130,7 @@ execute_sql_file /tmp/generate_customers.sql > /dev/null
 echo -e "${GREEN}✓ Generated $NUM_CUSTOMERS customers${NC}"
 echo ""
 
-echo -e "${YELLOW}[3/9] Generating Accounts...${NC}"
+echo -e "${YELLOW}[3/15] Generating Accounts...${NC}"
 cat > /tmp/generate_accounts.sql << 'EOF'
 -- Generate accounts (1-2 accounts per customer on average)
 INSERT INTO accounts (
@@ -177,7 +177,7 @@ execute_sql_file /tmp/generate_accounts.sql > /dev/null
 echo -e "${GREEN}✓ Generated $NUM_ACCOUNTS accounts${NC}"
 echo ""
 
-echo -e "${YELLOW}[4/9] Generating Merchants...${NC}"
+echo -e "${YELLOW}[4/15] Generating Merchants...${NC}"
 cat > /tmp/generate_merchants.sql << 'EOF'
 -- Generate merchants with realistic geographic data
 INSERT INTO merchants (
@@ -237,7 +237,7 @@ execute_sql_file /tmp/generate_merchants.sql > /dev/null
 echo -e "${GREEN}✓ Generated $NUM_MERCHANTS merchants${NC}"
 echo ""
 
-echo -e "${YELLOW}[5/9] Generating Devices...${NC}"
+echo -e "${YELLOW}[5/15] Generating Devices...${NC}"
 cat > /tmp/generate_devices.sql << 'EOF'
 -- Generate devices
 INSERT INTO devices (
@@ -282,7 +282,7 @@ execute_sql_file /tmp/generate_devices.sql > /dev/null
 echo -e "${GREEN}✓ Generated $NUM_DEVICES devices${NC}"
 echo ""
 
-echo -e "${YELLOW}[6/9] Generating Cards...${NC}"
+echo -e "${YELLOW}[6/15] Generating Cards...${NC}"
 cat > /tmp/generate_cards.sql << 'EOF'
 -- Generate cards (1-2 cards per account on average)
 INSERT INTO cards (
@@ -326,7 +326,7 @@ execute_sql_file /tmp/generate_cards.sql > /dev/null
 echo -e "${GREEN}✓ Generated $NUM_CARDS cards${NC}"
 echo ""
 
-echo -e "${YELLOW}[7/9] Generating Login Sessions...${NC}"
+echo -e "${YELLOW}[7/15] Generating Login Sessions...${NC}"
 cat > /tmp/generate_sessions.sql << 'EOF'
 -- Generate login sessions with realistic geographic data
 INSERT INTO login_sessions (
@@ -359,7 +359,7 @@ execute_sql_file /tmp/generate_sessions.sql > /dev/null
 echo -e "${GREEN}✓ Generated 500,000 login sessions${NC}"
 echo ""
 
-echo -e "${YELLOW}[8/9] Generating Transactions (this may take a while)...${NC}"
+echo -e "${YELLOW}[8/15] Generating Transactions (this may take a while)...${NC}"
 echo -e "${BLUE}This step generates $NUM_TRANSACTIONS transactions with fraud patterns${NC}"
 
 # Generate transactions in batches to avoid memory issues
@@ -433,7 +433,7 @@ done
 echo -e "${GREEN}✓ Generated $NUM_TRANSACTIONS transactions${NC}"
 echo ""
 
-echo -e "${YELLOW}[9/9] Generating Fraud Cases and Alerts...${NC}"
+echo -e "${YELLOW}[9/15] Generating Fraud Cases and Alerts...${NC}"
 
 # Generate alerts for flagged transactions
 execute_sql "
@@ -535,7 +535,261 @@ case_count=$(execute_sql "SELECT COUNT(*) FROM fraud_cases;" | grep -E '^\s*[0-9
 echo -e "Fraud Cases: ${GREEN}$case_count${NC}"
 
 echo ""
-echo -e "${YELLOW}Ready for SQL learning and fraud investigation!${NC}"
+echo -e "${BLUE}============================================================================${NC}"
+echo -e "${BLUE}Generating Analytics Data (Customer, Sales, KPIs)${NC}"
+echo -e "${BLUE}============================================================================${NC}"
+echo ""
+
+# ============================================================================
+# GENERATE CUSTOMER ANALYTICS DATA
+# ============================================================================
+
+echo -e "${YELLOW}[10/15] Generating Customer Lifetime Value data...${NC}"
+cat > /tmp/generate_clv.sql << 'EOF'
+-- Generate CLV for all customers based on their transaction history
+INSERT INTO customer_lifetime_value (
+    customer_id, calculation_date, total_revenue, total_transactions,
+    average_order_value, predicted_future_value, clv_score, segment_id
+)
+SELECT
+    c.customer_id,
+    CURRENT_DATE as calculation_date,
+    COALESCE(SUM(t.amount), 0) as total_revenue,
+    COUNT(t.transaction_id) as total_transactions,
+    COALESCE(AVG(t.amount), 0) as average_order_value,
+    COALESCE(SUM(t.amount) * 1.5, 0) as predicted_future_value,
+    COALESCE(SUM(t.amount) / 100, 0) as clv_score,
+    CASE
+        WHEN COALESCE(SUM(t.amount), 0) >= 50000 THEN 1  -- VIP
+        WHEN COALESCE(SUM(t.amount), 0) >= 10000 THEN 2  -- High Value
+        WHEN COALESCE(SUM(t.amount), 0) >= 2000 THEN 3   -- Medium Value
+        WHEN COALESCE(SUM(t.amount), 0) >= 500 THEN 4    -- Low Value
+        ELSE 6  -- New Customer
+    END as segment_id
+FROM customers c
+LEFT JOIN accounts a ON c.customer_id = a.customer_id
+LEFT JOIN transactions t ON a.account_id = t.account_id
+GROUP BY c.customer_id;
+EOF
+
+execute_sql_file /tmp/generate_clv.sql > /dev/null
+echo -e "${GREEN}✓ Generated CLV for all customers${NC}"
+echo ""
+
+echo -e "${YELLOW}[11/15] Generating Churn Predictions...${NC}"
+cat > /tmp/generate_churn.sql << 'EOF'
+-- Generate churn predictions based on transaction recency
+INSERT INTO churn_predictions (
+    customer_id, prediction_date, churn_probability, risk_level,
+    last_transaction_date, days_since_last_transaction, engagement_score
+)
+SELECT
+    c.customer_id,
+    CURRENT_DATE as prediction_date,
+    CASE
+        WHEN MAX(t.transaction_date) IS NULL THEN 90
+        WHEN CURRENT_DATE - MAX(t.transaction_date) > 180 THEN 85
+        WHEN CURRENT_DATE - MAX(t.transaction_date) > 90 THEN 60
+        WHEN CURRENT_DATE - MAX(t.transaction_date) > 30 THEN 30
+        ELSE 10
+    END as churn_probability,
+    CASE
+        WHEN MAX(t.transaction_date) IS NULL THEN 'HIGH'
+        WHEN CURRENT_DATE - MAX(t.transaction_date) > 180 THEN 'CRITICAL'
+        WHEN CURRENT_DATE - MAX(t.transaction_date) > 90 THEN 'HIGH'
+        WHEN CURRENT_DATE - MAX(t.transaction_date) > 30 THEN 'MEDIUM'
+        ELSE 'LOW'
+    END as risk_level,
+    MAX(t.transaction_date) as last_transaction_date,
+    COALESCE(CURRENT_DATE - MAX(t.transaction_date), 999) as days_since_last_transaction,
+    CASE
+        WHEN MAX(t.transaction_date) IS NULL THEN 0
+        WHEN CURRENT_DATE - MAX(t.transaction_date) > 180 THEN 10
+        WHEN CURRENT_DATE - MAX(t.transaction_date) > 90 THEN 30
+        WHEN CURRENT_DATE - MAX(t.transaction_date) > 30 THEN 60
+        ELSE 90
+    END as engagement_score
+FROM customers c
+LEFT JOIN accounts a ON c.customer_id = a.customer_id
+LEFT JOIN transactions t ON a.account_id = t.account_id
+GROUP BY c.customer_id;
+EOF
+
+execute_sql_file /tmp/generate_churn.sql > /dev/null
+echo -e "${GREEN}✓ Generated churn predictions${NC}"
+echo ""
+
+echo -e "${YELLOW}[12/15] Generating Customer Satisfaction data...${NC}"
+cat > /tmp/generate_satisfaction.sql << 'EOF'
+-- Generate satisfaction scores for random sample of customers
+INSERT INTO customer_satisfaction (
+    customer_id, survey_date, nps_score, csat_score, category, sentiment
+)
+SELECT
+    customer_id,
+    TIMESTAMP '2023-01-01' + (random() * 730)::INT * INTERVAL '1 day' as survey_date,
+    (random() * 200 - 100)::INT as nps_score,
+    (1 + random() * 4)::DECIMAL(3,2) as csat_score,
+    CASE (random() * 5)::INT
+        WHEN 0 THEN 'PRODUCT'
+        WHEN 1 THEN 'SERVICE'
+        WHEN 2 THEN 'SUPPORT'
+        WHEN 3 THEN 'BILLING'
+        ELSE 'OTHER'
+    END as category,
+    CASE
+        WHEN random() < 0.6 THEN 'POSITIVE'
+        WHEN random() < 0.85 THEN 'NEUTRAL'
+        ELSE 'NEGATIVE'
+    END as sentiment
+FROM customers
+WHERE random() < 0.3  -- 30% of customers have satisfaction data
+LIMIT 30000;
+EOF
+
+execute_sql_file /tmp/generate_satisfaction.sql > /dev/null
+echo -e "${GREEN}✓ Generated ~30,000 satisfaction records${NC}"
+echo ""
+
+# ============================================================================
+# GENERATE SALES ANALYTICS DATA
+# ============================================================================
+
+echo -e "${YELLOW}[13/15] Generating Sales Transactions...${NC}"
+cat > /tmp/generate_sales.sql << 'EOF'
+-- Link transactions to products
+INSERT INTO sales_transactions (
+    transaction_id, product_id, quantity, unit_price, discount_amount,
+    tax_amount, total_amount, sale_date, sales_channel, region
+)
+SELECT
+    t.transaction_id,
+    ((t.transaction_id % 24) + 1) as product_id,  -- Cycle through 24 products
+    (1 + (random() * 3)::INT) as quantity,
+    t.amount / (1 + (random() * 3)::INT) as unit_price,
+    CASE WHEN random() < 0.2 THEN t.amount * 0.1 ELSE 0 END as discount_amount,
+    t.amount * 0.08 as tax_amount,
+    t.amount as total_amount,
+    t.transaction_date as sale_date,
+    CASE (t.transaction_id % 4)
+        WHEN 0 THEN 'ONLINE'
+        WHEN 1 THEN 'STORE'
+        WHEN 2 THEN 'PHONE'
+        ELSE 'MOBILE_APP'
+    END as sales_channel,
+    CASE (t.transaction_id % 5)
+        WHEN 0 THEN 'Northeast'
+        WHEN 1 THEN 'Southeast'
+        WHEN 2 THEN 'Midwest'
+        WHEN 3 THEN 'Southwest'
+        ELSE 'West'
+    END as region
+FROM transactions t
+WHERE t.status = 'COMPLETED'
+LIMIT 1000000;  -- Link 1M transactions to products
+EOF
+
+execute_sql_file /tmp/generate_sales.sql > /dev/null
+echo -e "${GREEN}✓ Generated 1,000,000 sales transaction records${NC}"
+echo ""
+
+# ============================================================================
+# GENERATE KPI & METRICS DATA
+# ============================================================================
+
+echo -e "${YELLOW}[14/15] Generating Daily Metrics...${NC}"
+cat > /tmp/generate_metrics.sql << 'EOF'
+-- Generate daily metrics for the past 90 days
+INSERT INTO daily_metrics (
+    metric_date, kpi_id, metric_value, vs_previous_day_percentage, status
+)
+SELECT
+    date_series.metric_date,
+    kpi.kpi_id,
+    kpi.target_value * (0.8 + random() * 0.4) as metric_value,
+    (-20 + random() * 40)::DECIMAL(5,2) as vs_previous_day_percentage,
+    CASE
+        WHEN random() < 0.7 THEN 'ON_TARGET'
+        WHEN random() < 0.9 THEN 'WARNING'
+        ELSE 'CRITICAL'
+    END as status
+FROM generate_series(
+    CURRENT_DATE - INTERVAL '90 days',
+    CURRENT_DATE,
+    INTERVAL '1 day'
+) AS date_series(metric_date)
+CROSS JOIN kpi_definitions kpi
+WHERE kpi.is_active = TRUE;
+EOF
+
+execute_sql_file /tmp/generate_metrics.sql > /dev/null
+echo -e "${GREEN}✓ Generated 90 days of daily metrics${NC}"
+echo ""
+
+echo -e "${YELLOW}[15/15] Generating Monthly Summaries...${NC}"
+cat > /tmp/generate_monthly.sql << 'EOF'
+-- Generate monthly summaries for the past 24 months
+INSERT INTO monthly_summaries (
+    summary_month, summary_year, total_revenue, total_transactions,
+    total_customers, new_customers, average_transaction_value
+)
+SELECT
+    EXTRACT(MONTH FROM month_series)::INT as summary_month,
+    EXTRACT(YEAR FROM month_series)::INT as summary_year,
+    (10000000 + random() * 5000000)::DECIMAL(15,2) as total_revenue,
+    (50000 + (random() * 30000)::INT) as total_transactions,
+    (80000 + (random() * 20000)::INT) as total_customers,
+    (500 + (random() * 1500)::INT) as new_customers,
+    (100 + random() * 100)::DECIMAL(15,2) as average_transaction_value
+FROM generate_series(
+    CURRENT_DATE - INTERVAL '24 months',
+    CURRENT_DATE,
+    INTERVAL '1 month'
+) AS month_series;
+EOF
+
+execute_sql_file /tmp/generate_monthly.sql > /dev/null
+echo -e "${GREEN}✓ Generated 24 months of summaries${NC}"
+echo ""
+
+echo -e "${BLUE}============================================================================${NC}"
+echo -e "${GREEN}Data Generation Complete!${NC}"
+echo -e "${BLUE}============================================================================${NC}"
+echo ""
+echo -e "${YELLOW}Database Statistics:${NC}"
+
+customer_count=$(execute_sql "SELECT COUNT(*) FROM customers;" | grep -E '^\s*[0-9]+' | tr -d ' ')
+echo -e "Customers: ${GREEN}$customer_count${NC}"
+
+account_count=$(execute_sql "SELECT COUNT(*) FROM accounts;" | grep -E '^\s*[0-9]+' | tr -d ' ')
+echo -e "Accounts: ${GREEN}$account_count${NC}"
+
+merchant_count=$(execute_sql "SELECT COUNT(*) FROM merchants;" | grep -E '^\s*[0-9]+' | tr -d ' ')
+echo -e "Merchants: ${GREEN}$merchant_count${NC}"
+
+card_count=$(execute_sql "SELECT COUNT(*) FROM cards;" | grep -E '^\s*[0-9]+' | tr -d ' ')
+echo -e "Cards: ${GREEN}$card_count${NC}"
+
+transaction_count=$(execute_sql "SELECT COUNT(*) FROM transactions;" | grep -E '^\s*[0-9]+' | tr -d ' ')
+echo -e "Transactions: ${GREEN}$transaction_count${NC}"
+
+alert_count=$(execute_sql "SELECT COUNT(*) FROM alerts;" | grep -E '^\s*[0-9]+' | tr -d ' ')
+echo -e "Alerts: ${GREEN}$alert_count${NC}"
+
+case_count=$(execute_sql "SELECT COUNT(*) FROM fraud_cases;" | grep -E '^\s*[0-9]+' | tr -d ' ')
+echo -e "Fraud Cases: ${GREEN}$case_count${NC}"
+
+clv_count=$(execute_sql "SELECT COUNT(*) FROM customer_lifetime_value;" | grep -E '^\s*[0-9]+' | tr -d ' ')
+echo -e "Customer CLV Records: ${GREEN}$clv_count${NC}"
+
+sales_count=$(execute_sql "SELECT COUNT(*) FROM sales_transactions;" | grep -E '^\s*[0-9]+' | tr -d ' ')
+echo -e "Sales Records: ${GREEN}$sales_count${NC}"
+
+metrics_count=$(execute_sql "SELECT COUNT(*) FROM daily_metrics;" | grep -E '^\s*[0-9]+' | tr -d ' ')
+echo -e "Daily Metrics: ${GREEN}$metrics_count${NC}"
+
+echo ""
+echo -e "${YELLOW}Ready for Business Analytics and SQL learning!${NC}"
 echo -e "Access DB-UI at: ${BLUE}http://localhost:3000${NC}"
 echo ""
 

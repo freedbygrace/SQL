@@ -5,6 +5,27 @@
 -- ============================================================================
 
 -- Clear existing reference data (in reverse dependency order)
+-- New analytics tables
+TRUNCATE TABLE report_executions CASCADE;
+TRUNCATE TABLE report_definitions RESTART IDENTITY CASCADE;
+TRUNCATE TABLE data_quality_checks RESTART IDENTITY CASCADE;
+TRUNCATE TABLE dashboard_snapshots RESTART IDENTITY CASCADE;
+TRUNCATE TABLE trend_analysis RESTART IDENTITY CASCADE;
+TRUNCATE TABLE monthly_summaries RESTART IDENTITY CASCADE;
+TRUNCATE TABLE daily_metrics RESTART IDENTITY CASCADE;
+TRUNCATE TABLE kpi_definitions RESTART IDENTITY CASCADE;
+TRUNCATE TABLE revenue_forecasts RESTART IDENTITY CASCADE;
+TRUNCATE TABLE sales_performance RESTART IDENTITY CASCADE;
+TRUNCATE TABLE sales_targets RESTART IDENTITY CASCADE;
+TRUNCATE TABLE sales_transactions RESTART IDENTITY CASCADE;
+TRUNCATE TABLE product_catalog RESTART IDENTITY CASCADE;
+TRUNCATE TABLE engagement_metrics RESTART IDENTITY CASCADE;
+TRUNCATE TABLE customer_satisfaction RESTART IDENTITY CASCADE;
+TRUNCATE TABLE churn_predictions RESTART IDENTITY CASCADE;
+TRUNCATE TABLE customer_lifetime_value RESTART IDENTITY CASCADE;
+TRUNCATE TABLE customer_segments RESTART IDENTITY CASCADE;
+
+-- Existing tables
 TRUNCATE TABLE suspicious_activity_reports CASCADE;
 TRUNCATE TABLE case_alerts CASCADE;
 TRUNCATE TABLE case_transactions CASCADE;
@@ -253,4 +274,92 @@ $$ LANGUAGE plpgsql;
 COMMENT ON FUNCTION generate_fraud_score IS 'Calculates fraud risk score based on transaction attributes';
 COMMENT ON FUNCTION update_account_balance IS 'Automatically updates account balance after transaction';
 COMMENT ON FUNCTION check_suspicious_transaction IS 'Generates alerts for suspicious transactions';
+
+-- ============================================================================
+-- SEED DATA FOR NEW ANALYTICS TABLES
+-- ============================================================================
+
+-- Customer Segments
+INSERT INTO customer_segments (segment_name, segment_description, min_clv, max_clv) VALUES
+('VIP', 'Very Important Person - Highest value customers', 50000, NULL),
+('High Value', 'High spending customers with strong loyalty', 10000, 49999),
+('Medium Value', 'Regular customers with moderate spending', 2000, 9999),
+('Low Value', 'Occasional customers with low spending', 500, 1999),
+('At Risk', 'Previously active customers showing decline', NULL, NULL),
+('New Customer', 'Recently acquired customers (< 90 days)', NULL, NULL),
+('Dormant', 'Inactive customers (> 180 days)', NULL, NULL),
+('Churned', 'Lost customers who have not transacted in 365+ days', NULL, NULL);
+
+-- Product Catalog (Sample Products)
+INSERT INTO product_catalog (product_name, product_category, product_subcategory, unit_price, cost_price, margin_percentage, is_active, launch_date) VALUES
+-- Banking Products
+('Premium Checking Account', 'Banking', 'Checking', 0.00, 0.00, 0.00, TRUE, '2020-01-01'),
+('Basic Savings Account', 'Banking', 'Savings', 0.00, 0.00, 0.00, TRUE, '2020-01-01'),
+('High-Yield Savings', 'Banking', 'Savings', 0.00, 0.00, 0.00, TRUE, '2021-06-01'),
+('Business Checking', 'Banking', 'Business', 15.00, 5.00, 66.67, TRUE, '2020-01-01'),
+('Student Checking', 'Banking', 'Checking', 0.00, 0.00, 0.00, TRUE, '2020-01-01'),
+
+-- Credit Cards
+('Platinum Credit Card', 'Credit', 'Premium', 99.00, 20.00, 79.80, TRUE, '2020-01-01'),
+('Gold Credit Card', 'Credit', 'Standard', 49.00, 15.00, 69.39, TRUE, '2020-01-01'),
+('Cash Back Card', 'Credit', 'Rewards', 0.00, 10.00, -100.00, TRUE, '2021-01-01'),
+('Travel Rewards Card', 'Credit', 'Rewards', 95.00, 25.00, 73.68, TRUE, '2021-03-01'),
+('Business Credit Card', 'Credit', 'Business', 75.00, 20.00, 73.33, TRUE, '2020-06-01'),
+
+-- Loans
+('Personal Loan', 'Lending', 'Personal', 0.00, 0.00, 0.00, TRUE, '2020-01-01'),
+('Auto Loan', 'Lending', 'Auto', 0.00, 0.00, 0.00, TRUE, '2020-01-01'),
+('Home Mortgage', 'Lending', 'Mortgage', 0.00, 0.00, 0.00, TRUE, '2020-01-01'),
+('Small Business Loan', 'Lending', 'Business', 0.00, 0.00, 0.00, TRUE, '2020-01-01'),
+
+-- Investment Products
+('Index Fund', 'Investment', 'Mutual Funds', 0.00, 0.00, 0.00, TRUE, '2020-01-01'),
+('Bond Fund', 'Investment', 'Mutual Funds', 0.00, 0.00, 0.00, TRUE, '2020-01-01'),
+('Retirement Account (IRA)', 'Investment', 'Retirement', 0.00, 0.00, 0.00, TRUE, '2020-01-01'),
+('401k Plan', 'Investment', 'Retirement', 0.00, 0.00, 0.00, TRUE, '2020-01-01'),
+
+-- Services
+('Wire Transfer', 'Services', 'Transfers', 25.00, 5.00, 80.00, TRUE, '2020-01-01'),
+('International Transfer', 'Services', 'Transfers', 45.00, 10.00, 77.78, TRUE, '2020-01-01'),
+('Overdraft Protection', 'Services', 'Protection', 35.00, 5.00, 85.71, TRUE, '2020-01-01'),
+('Safe Deposit Box', 'Services', 'Security', 75.00, 20.00, 73.33, TRUE, '2020-01-01'),
+('Financial Advisory', 'Services', 'Advisory', 150.00, 50.00, 66.67, TRUE, '2021-01-01'),
+('Mobile Banking Premium', 'Services', 'Digital', 9.99, 2.00, 79.98, TRUE, '2022-01-01');
+
+-- KPI Definitions
+INSERT INTO kpi_definitions (kpi_name, kpi_description, kpi_category, calculation_formula, target_value, threshold_warning, threshold_critical, unit_of_measure, refresh_frequency, is_active) VALUES
+-- Sales KPIs
+('Daily Revenue', 'Total revenue generated per day', 'SALES', 'SUM(amount) FROM transactions WHERE DATE(transaction_date) = CURRENT_DATE', 500000, 400000, 300000, 'USD', 'DAILY', TRUE),
+('Monthly Revenue', 'Total revenue for the month', 'SALES', 'SUM(amount) FROM transactions WHERE MONTH(transaction_date) = CURRENT_MONTH', 15000000, 12000000, 10000000, 'USD', 'DAILY', TRUE),
+('Average Transaction Value', 'Average value per transaction', 'SALES', 'AVG(amount) FROM transactions', 150, 100, 75, 'USD', 'DAILY', TRUE),
+('Transactions Per Day', 'Number of transactions per day', 'SALES', 'COUNT(*) FROM transactions WHERE DATE(transaction_date) = CURRENT_DATE', 10000, 7500, 5000, 'Count', 'DAILY', TRUE),
+
+-- Customer KPIs
+('New Customers', 'New customer acquisitions', 'CUSTOMER', 'COUNT(*) FROM customers WHERE registration_date >= CURRENT_DATE - 30', 1000, 750, 500, 'Count', 'DAILY', TRUE),
+('Customer Churn Rate', 'Percentage of customers churning', 'CUSTOMER', '(Churned / Total) * 100', 5, 7, 10, 'Percentage', 'WEEKLY', TRUE),
+('Customer Lifetime Value', 'Average CLV across all customers', 'CUSTOMER', 'AVG(clv_score) FROM customer_lifetime_value', 5000, 4000, 3000, 'USD', 'WEEKLY', TRUE),
+('Net Promoter Score', 'Customer satisfaction metric', 'CUSTOMER', 'AVG(nps_score) FROM customer_satisfaction', 50, 30, 10, 'Score', 'WEEKLY', TRUE),
+('Customer Engagement Score', 'Average engagement across customers', 'CUSTOMER', 'AVG(engagement_score) FROM engagement_metrics', 75, 60, 45, 'Score', 'DAILY', TRUE),
+
+-- Operational KPIs
+('Transaction Success Rate', 'Percentage of successful transactions', 'OPERATIONAL', '(Successful / Total) * 100', 99, 97, 95, 'Percentage', 'HOURLY', TRUE),
+('Average Response Time', 'System response time', 'OPERATIONAL', 'AVG(response_time_ms)', 200, 500, 1000, 'Milliseconds', 'REALTIME', TRUE),
+('Fraud Detection Rate', 'Percentage of fraud caught', 'OPERATIONAL', '(Detected / Total Fraud) * 100', 95, 90, 85, 'Percentage', 'DAILY', TRUE),
+('Alert Resolution Time', 'Average time to resolve alerts', 'OPERATIONAL', 'AVG(resolution_time_hours)', 24, 48, 72, 'Hours', 'DAILY', TRUE),
+
+-- Financial KPIs
+('Gross Margin', 'Overall profit margin', 'FINANCIAL', '((Revenue - Cost) / Revenue) * 100', 75, 65, 55, 'Percentage', 'DAILY', TRUE),
+('Customer Acquisition Cost', 'Cost to acquire new customer', 'FINANCIAL', 'Marketing Spend / New Customers', 50, 75, 100, 'USD', 'WEEKLY', TRUE),
+('Return on Investment', 'ROI on marketing campaigns', 'FINANCIAL', '((Revenue - Cost) / Cost) * 100', 300, 200, 100, 'Percentage', 'WEEKLY', TRUE);
+
+-- Report Definitions
+INSERT INTO report_definitions (report_name, report_description, report_category, output_format, schedule_frequency, is_active) VALUES
+('Daily Sales Summary', 'Daily sales performance report', 'Sales', 'PDF', 'Daily at 6 AM', TRUE),
+('Weekly Customer Analytics', 'Customer behavior and segmentation analysis', 'Customer', 'EXCEL', 'Weekly on Monday', TRUE),
+('Monthly Financial Summary', 'Comprehensive monthly financial report', 'Financial', 'PDF', 'Monthly on 1st', TRUE),
+('Fraud Detection Report', 'Daily fraud alerts and cases', 'Risk', 'PDF', 'Daily at 8 AM', TRUE),
+('KPI Dashboard', 'Executive KPI dashboard', 'Executive', 'HTML', 'Daily at 7 AM', TRUE),
+('Customer Churn Analysis', 'At-risk customer identification', 'Customer', 'EXCEL', 'Weekly on Friday', TRUE),
+('Product Performance', 'Product sales and profitability analysis', 'Sales', 'EXCEL', 'Monthly on 5th', TRUE),
+('Data Quality Report', 'Data validation and quality metrics', 'Operations', 'CSV', 'Daily at 5 AM', TRUE);
 

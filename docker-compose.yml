@@ -3,10 +3,10 @@ version: '3.8'
 services:
   postgres:
     image: postgres:16-alpine
-    container_name: fraud_detection_db
+    container_name: business_analytics_db
     environment:
-      POSTGRES_DB: fraud_detection
-      POSTGRES_USER: fraud_analyst
+      POSTGRES_DB: business_analytics
+      POSTGRES_USER: data_analyst
       POSTGRES_PASSWORD: SecurePass123!
       PGDATA: /var/lib/postgresql/data/pgdata
     ports:
@@ -16,9 +16,9 @@ services:
       - ./schema:/docker-entrypoint-initdb.d
       - ./data:/data
     networks:
-      - fraud_network
+      - analytics_network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U fraud_analyst -d fraud_detection"]
+      test: ["CMD-SHELL", "pg_isready -U data_analyst -d business_analytics"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -26,24 +26,24 @@ services:
 
   db-ui:
     image: ghcr.io/n7olkachev/db-ui:latest
-    container_name: fraud_detection_ui
+    container_name: business_analytics_ui
     environment:
       POSTGRES_HOST: postgres
-      POSTGRES_USER: fraud_analyst
+      POSTGRES_USER: data_analyst
       POSTGRES_PASSWORD: SecurePass123!
-      POSTGRES_DB: fraud_detection
+      POSTGRES_DB: business_analytics
       POSTGRES_PORT: 5432
     ports:
       - "3000:3000"
     networks:
-      - fraud_network
+      - analytics_network
     depends_on:
       postgres:
         condition: service_healthy
     restart: unless-stopped
 
 networks:
-  fraud_network:
+  analytics_network:
     driver: bridge
 
 volumes:

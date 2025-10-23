@@ -1,6 +1,6 @@
 -- ============================================================================
--- Financial Fraud Detection Database Schema
--- Purpose: Educational SQL learning with realistic fraud investigation scenarios
+-- Business Analytics Database Schema
+-- Purpose: Data Analyst training with routine/semi-routine analysis scenarios
 -- ============================================================================
 -- This script is IDEMPOTENT - it will drop and recreate all objects
 -- ============================================================================
@@ -23,6 +23,27 @@ DROP FUNCTION IF EXISTS check_suspicious_transaction() CASCADE;
 DROP FUNCTION IF EXISTS generate_fraud_score(DECIMAL, BOOLEAN, DECIMAL, INT, BOOLEAN) CASCADE;
 
 -- Drop tables in reverse dependency order
+-- New analytics tables
+DROP TABLE IF EXISTS report_executions CASCADE;
+DROP TABLE IF EXISTS report_definitions CASCADE;
+DROP TABLE IF EXISTS data_quality_checks CASCADE;
+DROP TABLE IF EXISTS dashboard_snapshots CASCADE;
+DROP TABLE IF EXISTS trend_analysis CASCADE;
+DROP TABLE IF EXISTS monthly_summaries CASCADE;
+DROP TABLE IF EXISTS daily_metrics CASCADE;
+DROP TABLE IF EXISTS kpi_definitions CASCADE;
+DROP TABLE IF EXISTS revenue_forecasts CASCADE;
+DROP TABLE IF EXISTS sales_performance CASCADE;
+DROP TABLE IF EXISTS sales_targets CASCADE;
+DROP TABLE IF EXISTS sales_transactions CASCADE;
+DROP TABLE IF EXISTS product_catalog CASCADE;
+DROP TABLE IF EXISTS engagement_metrics CASCADE;
+DROP TABLE IF EXISTS customer_satisfaction CASCADE;
+DROP TABLE IF EXISTS churn_predictions CASCADE;
+DROP TABLE IF EXISTS customer_lifetime_value CASCADE;
+DROP TABLE IF EXISTS customer_segments CASCADE;
+
+-- Existing tables
 DROP TABLE IF EXISTS audit_log CASCADE;
 DROP TABLE IF EXISTS suspicious_activity_reports CASCADE;
 DROP TABLE IF EXISTS case_alerts CASCADE;
@@ -474,4 +495,322 @@ COMMENT ON TABLE merchants IS 'Merchant directory with risk ratings';
 COMMENT ON TABLE cards IS 'Payment cards linked to accounts';
 COMMENT ON TABLE devices IS 'Device fingerprints for fraud detection';
 COMMENT ON TABLE login_sessions IS 'Login history for account takeover detection';
+
+-- ============================================================================
+-- CUSTOMER ANALYTICS TABLES (for routine customer analysis)
+-- ============================================================================
+
+CREATE TABLE customer_segments (
+    segment_id SERIAL PRIMARY KEY,
+    segment_name VARCHAR(100) NOT NULL UNIQUE,
+    segment_description TEXT,
+    criteria_definition JSONB,
+    min_clv DECIMAL(15,2),
+    max_clv DECIMAL(15,2),
+    created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE customer_lifetime_value (
+    clv_id SERIAL PRIMARY KEY,
+    customer_id INT NOT NULL REFERENCES customers(customer_id),
+    calculation_date DATE NOT NULL,
+    total_revenue DECIMAL(15,2) DEFAULT 0,
+    total_transactions INT DEFAULT 0,
+    average_order_value DECIMAL(15,2) DEFAULT 0,
+    predicted_future_value DECIMAL(15,2),
+    clv_score DECIMAL(10,2),
+    segment_id INT REFERENCES customer_segments(segment_id),
+    UNIQUE(customer_id, calculation_date)
+);
+
+CREATE TABLE churn_predictions (
+    prediction_id SERIAL PRIMARY KEY,
+    customer_id INT NOT NULL REFERENCES customers(customer_id),
+    prediction_date DATE NOT NULL,
+    churn_probability DECIMAL(5,2) CHECK (churn_probability BETWEEN 0 AND 100),
+    risk_level VARCHAR(20) CHECK (risk_level IN ('LOW', 'MEDIUM', 'HIGH', 'CRITICAL')),
+    last_transaction_date DATE,
+    days_since_last_transaction INT,
+    engagement_score DECIMAL(5,2),
+    recommended_action TEXT,
+    UNIQUE(customer_id, prediction_date)
+);
+
+CREATE TABLE customer_satisfaction (
+    satisfaction_id SERIAL PRIMARY KEY,
+    customer_id INT NOT NULL REFERENCES customers(customer_id),
+    survey_date DATE NOT NULL,
+    nps_score INT CHECK (nps_score BETWEEN -100 AND 100),
+    csat_score DECIMAL(3,2) CHECK (csat_score BETWEEN 1 AND 5),
+    feedback_text TEXT,
+    category VARCHAR(50) CHECK (category IN ('PRODUCT', 'SERVICE', 'SUPPORT', 'BILLING', 'OTHER')),
+    sentiment VARCHAR(20) CHECK (sentiment IN ('POSITIVE', 'NEUTRAL', 'NEGATIVE'))
+);
+
+CREATE TABLE engagement_metrics (
+    metric_id SERIAL PRIMARY KEY,
+    customer_id INT NOT NULL REFERENCES customers(customer_id),
+    metric_date DATE NOT NULL,
+    login_count INT DEFAULT 0,
+    page_views INT DEFAULT 0,
+    time_spent_minutes INT DEFAULT 0,
+    features_used JSONB,
+    support_tickets_opened INT DEFAULT 0,
+    engagement_score DECIMAL(5,2),
+    UNIQUE(customer_id, metric_date)
+);
+
+-- ============================================================================
+-- SALES & REVENUE ANALYTICS TABLES (for semi-routine sales reporting)
+-- ============================================================================
+
+CREATE TABLE product_catalog (
+    product_id SERIAL PRIMARY KEY,
+    product_name VARCHAR(200) NOT NULL,
+    product_category VARCHAR(100),
+    product_subcategory VARCHAR(100),
+    unit_price DECIMAL(15,2) NOT NULL,
+    cost_price DECIMAL(15,2),
+    margin_percentage DECIMAL(5,2),
+    is_active BOOLEAN DEFAULT TRUE,
+    launch_date DATE,
+    discontinued_date DATE
+);
+
+CREATE TABLE sales_transactions (
+    sale_id SERIAL PRIMARY KEY,
+    transaction_id INT REFERENCES transactions(transaction_id),
+    product_id INT REFERENCES product_catalog(product_id),
+    quantity INT NOT NULL DEFAULT 1,
+    unit_price DECIMAL(15,2) NOT NULL,
+    discount_amount DECIMAL(15,2) DEFAULT 0,
+    tax_amount DECIMAL(15,2) DEFAULT 0,
+    total_amount DECIMAL(15,2) NOT NULL,
+    sale_date TIMESTAMP NOT NULL,
+    sales_channel VARCHAR(50) CHECK (sales_channel IN ('ONLINE', 'STORE', 'PHONE', 'MOBILE_APP')),
+    sales_rep_id INT,
+    region VARCHAR(100)
+);
+
+CREATE TABLE sales_targets (
+    target_id SERIAL PRIMARY KEY,
+    target_period VARCHAR(20) CHECK (target_period IN ('DAILY', 'WEEKLY', 'MONTHLY', 'QUARTERLY', 'YEARLY')),
+    start_date DATE NOT NULL,
+    end_date DATE NOT NULL,
+    product_category VARCHAR(100),
+    region VARCHAR(100),
+    target_revenue DECIMAL(15,2),
+    target_units INT,
+    target_customers INT,
+    created_by VARCHAR(100),
+    created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE sales_performance (
+    performance_id SERIAL PRIMARY KEY,
+    period_date DATE NOT NULL,
+    period_type VARCHAR(20) CHECK (period_type IN ('DAILY', 'WEEKLY', 'MONTHLY', 'QUARTERLY')),
+    product_id INT REFERENCES product_catalog(product_id),
+    region VARCHAR(100),
+    total_revenue DECIMAL(15,2) DEFAULT 0,
+    total_units_sold INT DEFAULT 0,
+    total_transactions INT DEFAULT 0,
+    unique_customers INT DEFAULT 0,
+    average_order_value DECIMAL(15,2),
+    vs_target_percentage DECIMAL(5,2),
+    UNIQUE(period_date, period_type, product_id, region)
+);
+
+CREATE TABLE revenue_forecasts (
+    forecast_id SERIAL PRIMARY KEY,
+    forecast_date DATE NOT NULL,
+    forecast_period_start DATE NOT NULL,
+    forecast_period_end DATE NOT NULL,
+    product_category VARCHAR(100),
+    region VARCHAR(100),
+    forecasted_revenue DECIMAL(15,2),
+    confidence_level VARCHAR(20) CHECK (confidence_level IN ('LOW', 'MEDIUM', 'HIGH')),
+    forecast_method VARCHAR(50) CHECK (forecast_method IN ('HISTORICAL', 'TREND', 'SEASONAL', 'ML')),
+    actual_revenue DECIMAL(15,2),
+    variance_percentage DECIMAL(5,2)
+);
+
+
+-- ============================================================================
+-- OPERATIONAL METRICS & KPI TABLES (for dashboard creation)
+-- ============================================================================
+
+CREATE TABLE kpi_definitions (
+    kpi_id SERIAL PRIMARY KEY,
+    kpi_name VARCHAR(100) NOT NULL UNIQUE,
+    kpi_description TEXT,
+    kpi_category VARCHAR(50) CHECK (kpi_category IN ('SALES', 'CUSTOMER', 'OPERATIONAL', 'FINANCIAL')),
+    calculation_formula TEXT,
+    target_value DECIMAL(15,2),
+    threshold_warning DECIMAL(15,2),
+    threshold_critical DECIMAL(15,2),
+    unit_of_measure VARCHAR(50),
+    refresh_frequency VARCHAR(20) CHECK (refresh_frequency IN ('REALTIME', 'HOURLY', 'DAILY', 'WEEKLY')),
+    is_active BOOLEAN DEFAULT TRUE
+);
+
+CREATE TABLE daily_metrics (
+    metric_id SERIAL PRIMARY KEY,
+    metric_date DATE NOT NULL,
+    kpi_id INT NOT NULL REFERENCES kpi_definitions(kpi_id),
+    metric_value DECIMAL(15,2),
+    vs_previous_day_percentage DECIMAL(5,2),
+    vs_previous_week_percentage DECIMAL(5,2),
+    vs_previous_month_percentage DECIMAL(5,2),
+    status VARCHAR(20) CHECK (status IN ('ON_TARGET', 'WARNING', 'CRITICAL')),
+    notes TEXT,
+    UNIQUE(metric_date, kpi_id)
+);
+
+CREATE TABLE monthly_summaries (
+    summary_id SERIAL PRIMARY KEY,
+    summary_month INT CHECK (summary_month BETWEEN 1 AND 12),
+    summary_year INT,
+    total_revenue DECIMAL(15,2) DEFAULT 0,
+    total_transactions INT DEFAULT 0,
+    total_customers INT DEFAULT 0,
+    new_customers INT DEFAULT 0,
+    churned_customers INT DEFAULT 0,
+    average_transaction_value DECIMAL(15,2),
+    customer_acquisition_cost DECIMAL(15,2),
+    customer_lifetime_value DECIMAL(15,2),
+    net_promoter_score DECIMAL(5,2),
+    gross_margin_percentage DECIMAL(5,2),
+    UNIQUE(summary_month, summary_year)
+);
+
+CREATE TABLE trend_analysis (
+    trend_id SERIAL PRIMARY KEY,
+    kpi_id INT NOT NULL REFERENCES kpi_definitions(kpi_id),
+    analysis_date DATE NOT NULL,
+    period_start DATE NOT NULL,
+    period_end DATE NOT NULL,
+    trend_direction VARCHAR(20) CHECK (trend_direction IN ('UP', 'DOWN', 'FLAT')),
+    trend_strength VARCHAR(20) CHECK (trend_strength IN ('WEAK', 'MODERATE', 'STRONG')),
+    moving_average_7day DECIMAL(15,2),
+    moving_average_30day DECIMAL(15,2),
+    seasonality_detected BOOLEAN DEFAULT FALSE,
+    anomalies_detected BOOLEAN DEFAULT FALSE,
+    statistical_significance DECIMAL(5,4)
+);
+
+CREATE TABLE dashboard_snapshots (
+    snapshot_id SERIAL PRIMARY KEY,
+    dashboard_name VARCHAR(100) NOT NULL,
+    snapshot_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    data_payload JSONB,
+    refresh_duration_seconds DECIMAL(10,2),
+    row_count INT,
+    last_updated_by VARCHAR(100)
+);
+
+-- ============================================================================
+-- BUSINESS INTELLIGENCE & REPORTING TABLES
+-- ============================================================================
+
+CREATE TABLE report_definitions (
+    report_id SERIAL PRIMARY KEY,
+    report_name VARCHAR(200) NOT NULL UNIQUE,
+    report_description TEXT,
+    report_category VARCHAR(100),
+    sql_query_template TEXT,
+    parameters JSONB,
+    output_format VARCHAR(20) CHECK (output_format IN ('PDF', 'EXCEL', 'CSV', 'HTML')),
+    schedule_frequency VARCHAR(50),
+    recipients TEXT,
+    is_active BOOLEAN DEFAULT TRUE,
+    created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE report_executions (
+    execution_id SERIAL PRIMARY KEY,
+    report_id INT NOT NULL REFERENCES report_definitions(report_id),
+    execution_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    parameters_used JSONB,
+    row_count INT,
+    execution_duration_seconds DECIMAL(10,2),
+    status VARCHAR(20) CHECK (status IN ('SUCCESS', 'FAILED', 'TIMEOUT')),
+    error_message TEXT,
+    output_file_path TEXT,
+    executed_by VARCHAR(100)
+);
+
+CREATE TABLE data_quality_checks (
+    check_id SERIAL PRIMARY KEY,
+    check_name VARCHAR(200) NOT NULL,
+    table_name VARCHAR(100) NOT NULL,
+    column_name VARCHAR(100),
+    check_type VARCHAR(50) CHECK (check_type IN ('NULL_CHECK', 'RANGE_CHECK', 'UNIQUENESS', 'REFERENTIAL_INTEGRITY', 'FORMAT_CHECK')),
+    check_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    records_checked INT,
+    records_failed INT,
+    failure_percentage DECIMAL(5,2),
+    status VARCHAR(20) CHECK (status IN ('PASS', 'FAIL', 'WARNING')),
+    remediation_notes TEXT
+);
+
+-- ============================================================================
+-- INDEXES FOR NEW ANALYTICS TABLES
+-- ============================================================================
+
+-- Customer Analytics indexes
+CREATE INDEX idx_clv_customer ON customer_lifetime_value(customer_id);
+CREATE INDEX idx_clv_date ON customer_lifetime_value(calculation_date);
+CREATE INDEX idx_clv_segment ON customer_lifetime_value(segment_id);
+CREATE INDEX idx_churn_customer ON churn_predictions(customer_id);
+CREATE INDEX idx_churn_risk ON churn_predictions(risk_level);
+CREATE INDEX idx_satisfaction_customer ON customer_satisfaction(customer_id);
+CREATE INDEX idx_engagement_customer ON engagement_metrics(customer_id);
+CREATE INDEX idx_engagement_date ON engagement_metrics(metric_date);
+
+-- Sales Analytics indexes
+CREATE INDEX idx_sales_trans_product ON sales_transactions(product_id);
+CREATE INDEX idx_sales_trans_date ON sales_transactions(sale_date);
+CREATE INDEX idx_sales_trans_channel ON sales_transactions(sales_channel);
+CREATE INDEX idx_sales_perf_date ON sales_performance(period_date);
+CREATE INDEX idx_sales_perf_product ON sales_performance(product_id);
+CREATE INDEX idx_product_category ON product_catalog(product_category);
+CREATE INDEX idx_product_active ON product_catalog(is_active);
+
+-- KPI & Metrics indexes
+CREATE INDEX idx_daily_metrics_date ON daily_metrics(metric_date);
+CREATE INDEX idx_daily_metrics_kpi ON daily_metrics(kpi_id);
+CREATE INDEX idx_monthly_summaries_period ON monthly_summaries(summary_year, summary_month);
+CREATE INDEX idx_trend_kpi ON trend_analysis(kpi_id);
+CREATE INDEX idx_trend_date ON trend_analysis(analysis_date);
+
+-- Reporting indexes
+CREATE INDEX idx_report_exec_report ON report_executions(report_id);
+CREATE INDEX idx_report_exec_timestamp ON report_executions(execution_timestamp);
+CREATE INDEX idx_data_quality_table ON data_quality_checks(table_name);
+CREATE INDEX idx_data_quality_date ON data_quality_checks(check_date);
+
+-- ============================================================================
+-- COMMENTS FOR NEW TABLES
+-- ============================================================================
+
+COMMENT ON TABLE customer_segments IS 'Customer segmentation definitions for targeted analysis';
+COMMENT ON TABLE customer_lifetime_value IS 'Customer lifetime value calculations and tracking';
+COMMENT ON TABLE churn_predictions IS 'Customer churn risk predictions for retention analysis';
+COMMENT ON TABLE customer_satisfaction IS 'Customer satisfaction scores and feedback';
+COMMENT ON TABLE engagement_metrics IS 'Customer engagement tracking metrics';
+COMMENT ON TABLE product_catalog IS 'Product master data for sales analysis';
+COMMENT ON TABLE sales_transactions IS 'Detailed sales transaction records';
+COMMENT ON TABLE sales_targets IS 'Sales performance targets and goals';
+COMMENT ON TABLE sales_performance IS 'Aggregated sales performance metrics';
+COMMENT ON TABLE revenue_forecasts IS 'Revenue forecasting and predictions';
+COMMENT ON TABLE kpi_definitions IS 'Master list of tracked KPIs';
+COMMENT ON TABLE daily_metrics IS 'Daily operational metrics for dashboards';
+COMMENT ON TABLE monthly_summaries IS 'Monthly aggregated business summaries';
+COMMENT ON TABLE trend_analysis IS 'Statistical trend analysis results';
+COMMENT ON TABLE dashboard_snapshots IS 'Pre-calculated dashboard data snapshots';
+COMMENT ON TABLE report_definitions IS 'Standard report catalog';
+COMMENT ON TABLE report_executions IS 'Report execution history and logs';
+COMMENT ON TABLE data_quality_checks IS 'Data quality validation tracking';
 

@@ -3,7 +3,7 @@
 # ============================================================================
 # Database Setup Script - IDEMPOTENT
 # ============================================================================
-# This script sets up the complete fraud detection database
+# This script sets up the complete business analytics database
 # It can be run multiple times safely - it will recreate everything
 # ============================================================================
 
@@ -19,8 +19,8 @@ NC='\033[0m' # No Color
 # Configuration from environment or defaults
 DB_HOST="${POSTGRES_HOST:-localhost}"
 DB_PORT="${POSTGRES_PORT:-5432}"
-DB_NAME="${POSTGRES_DB:-fraud_detection}"
-DB_USER="${POSTGRES_USER:-fraud_analyst}"
+DB_NAME="${POSTGRES_DB:-business_analytics}"
+DB_USER="${POSTGRES_USER:-data_analyst}"
 DB_PASSWORD="${POSTGRES_PASSWORD:-SecurePass123!}"
 
 # Script directory
@@ -28,7 +28,7 @@ SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
 
 echo -e "${BLUE}============================================================================${NC}"
-echo -e "${BLUE}Financial Fraud Detection Database - Setup Script${NC}"
+echo -e "${BLUE}Business Analytics Database - Setup Script${NC}"
 echo -e "${BLUE}============================================================================${NC}"
 echo -e "Database: ${GREEN}$DB_NAME${NC}"
 echo -e "Host: ${GREEN}$DB_HOST:$DB_PORT${NC}"

@@ -3,7 +3,7 @@
 # ============================================================================
 # Setup Verification Script
 # ============================================================================
-# Verifies that the fraud detection database is properly set up
+# Verifies that the business analytics database is properly set up
 # ============================================================================
 
 set -e
@@ -18,12 +18,12 @@ NC='\033[0m' # No Color
 # Configuration
 DB_HOST="${POSTGRES_HOST:-localhost}"
 DB_PORT="${POSTGRES_PORT:-5432}"
-DB_NAME="${POSTGRES_DB:-fraud_detection}"
-DB_USER="${POSTGRES_USER:-fraud_analyst}"
+DB_NAME="${POSTGRES_DB:-business_analytics}"
+DB_USER="${POSTGRES_USER:-data_analyst}"
 DB_PASSWORD="${POSTGRES_PASSWORD:-SecurePass123!}"
 
 echo -e "${BLUE}============================================================================${NC}"
-echo -e "${BLUE}Financial Fraud Detection Database - Verification${NC}"
+echo -e "${BLUE}Business Analytics Database - Verification${NC}"
 echo -e "${BLUE}============================================================================${NC}"
 echo ""
 
@@ -34,7 +34,7 @@ execute_sql() {
 
 # Check 1: Docker containers
 echo -e "${YELLOW}[1/10] Checking Docker containers...${NC}"
-if docker ps | grep -q "fraud_detection_db"; then
+if docker ps | grep -q "business_analytics_db"; then
     echo -e "${GREEN}✓ PostgreSQL container is running${NC}"
 else
     echo -e "${RED}✗ PostgreSQL container is not running${NC}"
@@ -42,7 +42,7 @@ else
     exit 1
 fi
 
-if docker ps | grep -q "fraud_detection_ui"; then
+if docker ps | grep -q "business_analytics_ui"; then
     echo -e "${GREEN}✓ DB-UI container is running${NC}"
 else
     echo -e "${RED}✗ DB-UI container is not running${NC}"

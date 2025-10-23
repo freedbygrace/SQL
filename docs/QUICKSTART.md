@@ -19,7 +19,7 @@ docker-compose up -d
 docker-compose ps
 ```
 
-You should see both `fraud_detection_db` and `fraud_detection_ui` running.
+You should see both `business_analytics_db` and `business_analytics_ui` running.
 
 ---
 
@@ -34,9 +34,9 @@ chmod +x scripts/setup-database.sh
 ```
 
 **What this does:**
-- Creates all 20+ tables
+- Creates all 39 tables across 4 business models
 - Sets up indexes and constraints
-- Loads reference data (countries, merchant categories, etc.)
+- Loads reference data (countries, merchant categories, customer segments, products, KPIs, etc.)
 
 **Expected output:**
 ```
@@ -63,6 +63,9 @@ chmod +x data/generate_data.sh
 - Creates 150,000 accounts
 - Generates 5,000,000 transactions
 - Creates fraud patterns and alerts
+- Generates customer analytics (CLV, churn, satisfaction)
+- Creates sales data (1M sales records)
+- Generates KPI metrics (90 days of daily metrics)
 
 **⏱️ Time estimate:**
 - Fast machine (SSD, 16GB RAM): ~15 minutes
@@ -72,10 +75,16 @@ chmod +x data/generate_data.sh
 **You can monitor progress:**
 The script shows progress for each step:
 ```
-[1/9] Loading geographic reference data...
-[2/9] Generating Customers...
-[3/9] Generating Accounts...
+[1/15] Loading geographic reference data...
+[2/15] Generating Customers...
+[3/15] Generating Accounts...
 ...
+[10/15] Generating Customer Lifetime Value data...
+[11/15] Generating Churn Predictions...
+[12/15] Generating Customer Satisfaction data...
+[13/15] Generating Sales Transactions...
+[14/15] Generating Daily Metrics...
+[15/15] Generating Monthly Summaries...
 ```
 
 ---
@@ -98,7 +107,7 @@ The script shows progress for each step:
 #### Option B: Command Line (psql)
 
 ```bash
-docker exec -it fraud_detection_db psql -U fraud_analyst -d fraud_detection
+docker exec -it business_analytics_db psql -U data_analyst -d business_analytics
 ```
 
 **Quick commands:**
@@ -122,8 +131,8 @@ SELECT COUNT(*) FROM transactions;
 ```
 Host:     localhost
 Port:     5432
-Database: fraud_detection
-Username: fraud_analyst
+Database: business_analytics
+Username: data_analyst
 Password: SecurePass123!
 ```
 
@@ -146,43 +155,65 @@ SELECT COUNT(*) FROM customers;
 -- How many transactions?
 SELECT COUNT(*) FROM transactions;
 
--- How many fraud alerts?
-SELECT COUNT(*) FROM alerts WHERE status = 'OPEN';
+-- How many sales records?
+SELECT COUNT(*) FROM sales_transactions;
+
+-- How many KPIs are being tracked?
+SELECT COUNT(*) FROM kpi_definitions WHERE is_active = TRUE;
 ```
 
-### 2. Find High-Risk Customers
+### 2. Customer Analytics: High-Value Customers
 
 ```sql
-SELECT 
-    customer_id,
-    first_name,
-    last_name,
-    email,
-    risk_score
-FROM customers
-WHERE risk_score > 80
-ORDER BY risk_score DESC
+SELECT
+    c.customer_id,
+    c.first_name,
+    c.last_name,
+    clv.clv_score,
+    cs.segment_name
+FROM customers c
+JOIN customer_lifetime_value clv ON c.customer_id = clv.customer_id
+JOIN customer_segments cs ON clv.segment_id = cs.segment_id
+WHERE cs.segment_name IN ('VIP', 'High Value')
+ORDER BY clv.clv_score DESC
 LIMIT 10;
 ```
 
-### 3. View Recent Transactions
+### 3. Sales Analytics: Top Products
 
 ```sql
-SELECT 
-    transaction_id,
-    account_id,
-    amount,
-    transaction_date,
-    is_flagged
-FROM transactions
-ORDER BY transaction_date DESC
-LIMIT 20;
+SELECT
+    p.product_name,
+    p.product_category,
+    COUNT(st.transaction_id) as sales_count,
+    SUM(st.total_amount) as total_revenue
+FROM product_catalog p
+JOIN sales_transactions st ON p.product_id = st.product_id
+GROUP BY p.product_id, p.product_name, p.product_category
+ORDER BY total_revenue DESC
+LIMIT 10;
 ```
 
-### 4. Find Flagged Transactions
+### 4. KPI Dashboard: Current Status
 
 ```sql
-SELECT 
+SELECT
+    kd.kpi_name,
+    kd.kpi_category,
+    dm.metric_value,
+    kd.target_value,
+    dm.status
+FROM kpi_definitions kd
+JOIN daily_metrics dm ON kd.kpi_id = dm.kpi_id
+WHERE dm.metric_date = CURRENT_DATE
+  AND kd.is_active = TRUE
+ORDER BY kd.kpi_category, kd.kpi_name;
+```
+
+### 5. Fraud Detection: Flagged Transactions
+
+```sql
+SELECT
     t.transaction_id,
     t.amount,
     t.fraud_score,

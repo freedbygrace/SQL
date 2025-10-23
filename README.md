@@ -1,44 +1,82 @@
-# Financial Fraud Detection - SQL Learning Database
+# Business Analytics - SQL Learning Database
 
-A comprehensive, production-grade database designed for learning SQL through realistic financial fraud investigation scenarios.
+A comprehensive, production-grade database designed for learning SQL through realistic business analytics, customer insights, sales analysis, and fraud detection scenarios.
 
 ## 🎯 Overview
 
-This project provides a complete PostgreSQL database with **5+ million transactions**, embedded fraud patterns, and progressive SQL exercises. Perfect for:
+This project provides a complete PostgreSQL database with **5+ million transactions**, **39 tables** across 4 business models, and progressive SQL exercises aligned with **Data Analyst** responsibilities. Perfect for:
 
 - **SQL Beginners** → Learn fundamentals with real-world data
-- **Data Analysts** → Practice fraud detection queries
-- **Security Professionals** → Understand fraud patterns
-- **Students** → Hands-on financial crime investigation
+- **Data Analysts** → Practice customer analytics, sales analysis, KPI dashboards
+- **Business Analysts** → Understand customer behavior and revenue patterns
+- **Security Professionals** → Detect fraud patterns
+- **Students** → Hands-on business intelligence and analytics
 
 ## 📊 Database Statistics
 
+### Core Data
 - **100,000** Customers with KYC data
 - **150,000** Bank accounts (checking, savings, credit)
 - **200,000** Payment cards
 - **50,000** Merchants across 35 categories
 - **5,000,000** Transactions (7% fraudulent)
+- **1,000,000** Sales records linked to products
+- **500,000** Login sessions
+
+### Analytics Data
+- **100,000** Customer Lifetime Value calculations
+- **100,000** Churn predictions
+- **30,000** Customer satisfaction surveys
+- **24** Product catalog entries
+- **1,500+** Daily KPI metrics
+- **24** Monthly business summaries
 - **50,000+** Fraud alerts
 - **5,000+** Fraud cases
-- **500,000** Login sessions
 
 ## 🏗️ Architecture
 
 ### Data Model Features
-- ✅ **20+ Tables** with proper relationships
+- ✅ **39 Tables** across 4 business models
 - ✅ **Foreign key constraints** for data integrity
 - ✅ **Indexes** for query performance
 - ✅ **Realistic geographic data** (100 US cities, 210 world cities)
-- ✅ **Embedded fraud patterns** (velocity, geographic, structuring)
+- ✅ **Customer analytics** (CLV, churn, satisfaction, engagement)
+- ✅ **Sales analytics** (products, targets, forecasts)
+- ✅ **KPI tracking** (daily metrics, trends, dashboards)
+- ✅ **Fraud detection** (velocity, geographic, structuring patterns)
 - ✅ **Audit trails** and compliance tables
 
-### Key Entities
+### Business Models
+
+#### 1. Fraud Detection Model (20 tables)
 ```
-customers → accounts → transactions
-                    ↓
-                  cards → merchants
-                    ↓
-                 alerts → fraud_cases
+customers → accounts → transactions → alerts → fraud_cases
+              ↓
+            cards → merchants
+```
+
+#### 2. Customer Analytics Model (5 tables)
+```
+customers → customer_lifetime_value → customer_segments
+         → churn_predictions
+         → customer_satisfaction
+         → engagement_metrics
+```
+
+#### 3. Sales & Revenue Model (6 tables)
+```
+product_catalog → sales_transactions → sales_performance
+                                    → sales_targets
+                                    → revenue_forecasts
+```
+
+#### 4. KPI & Metrics Model (8 tables)
+```
+kpi_definitions → daily_metrics → trend_analysis
+               → monthly_summaries
+               → dashboard_snapshots
+               → report_definitions → report_executions
+               → data_quality_checks
 ```
 
 ## 🚀 Quick Start
@@ -86,15 +124,15 @@ http://localhost:3000
 
 **Option B: Command Line**
 ```bash
-docker exec -it fraud_detection_db psql -U fraud_analyst -d fraud_detection
+docker exec -it business_analytics_db psql -U data_analyst -d business_analytics
 ```
 
 **Option C: Your Favorite SQL Client**
 ```
 Host: localhost
 Port: 5432
-Database: fraud_detection
-Username: fraud_analyst
+Database: business_analytics
+Username: data_analyst
 Password: SecurePass123!
 ```
 
@@ -106,29 +144,36 @@ Password: SecurePass123!
 - Basic comparisons
 - **Location:** `exercises/01-basic-queries/`
 
-### Level 2: Joins
-- INNER JOIN, LEFT JOIN
-- Multiple table queries
-- Relationship navigation
-- **Location:** `exercises/02-joins/`
+### Level 2: Customer Analytics ⭐ NEW
+- Customer segmentation
+- Lifetime value (CLV) analysis
+- Churn prediction
+- Satisfaction metrics
+- Engagement tracking
+- **Location:** `exercises/02-customer-analytics/`
 
-### Level 3: Aggregations
-- COUNT, SUM, AVG, MAX, MIN
-- GROUP BY and HAVING
-- Statistical analysis
-- **Location:** `exercises/03-aggregations/`
+### Level 3: Sales & Revenue Analysis ⭐ NEW
+- Sales performance vs targets
+- Product analytics
+- Channel and regional analysis
+- Revenue forecasting
+- Profitability analysis
+- **Location:** `exercises/03-sales-analysis/`
 
-### Level 4: Subqueries
-- Nested queries
-- Correlated subqueries
-- EXISTS and IN
-- **Location:** `exercises/04-subqueries/`
+### Level 4: KPI Dashboards & Metrics ⭐ NEW
+- KPI tracking and monitoring
+- Trend analysis
+- Dashboard creation
+- Data quality monitoring
+- Executive reporting
+- **Location:** `exercises/04-kpi-dashboards/`
 
-### Level 5: Window Functions
-- ROW_NUMBER, RANK, DENSE_RANK
-- Running totals
-- Moving averages
-- **Location:** `exercises/05-window-functions/`
+### Level 5: Advanced SQL Techniques
+- Window functions (ROW_NUMBER, RANK)
+- Common Table Expressions (CTEs)
+- Running totals and moving averages
+- Complex aggregations
+- **Location:** `exercises/05-advanced-sql/`
 
 ### Level 6: Fraud Detection
 - Velocity fraud detection
@@ -136,6 +181,40 @@ Password: SecurePass123!
 - Money mule networks
 - Account takeover patterns
 - **Location:** `exercises/06-fraud-detection/`
+
+## 💼 Data Analyst Use Cases
+
+This database supports typical **Data Analyst** responsibilities:
+
+### Routine Analysis
+- Daily sales summaries
+- Customer acquisition metrics
+- Transaction volume tracking
+- Basic KPI monitoring
+
+### Semi-Routine Reporting
+- Weekly customer analytics
+- Monthly revenue reports
+- Product performance analysis
+- Churn risk identification
+
+### Dashboard Creation
+- Executive KPI dashboards
+- Sales performance dashboards
+- Customer health dashboards
+- Operational metrics dashboards
+
+### Trend Identification
+- Revenue trends (MoM, YoY)
+- Customer behavior patterns
+- Product sales seasonality
+- Engagement score trends
+
+### Data Quality
+- Missing data detection
+- Anomaly identification
+- Validation checks
+- Data completeness monitoring
 
 ## 🔍 Fraud Patterns Included
 
@@ -180,18 +259,19 @@ SQL/
 │       ├── world_cities.csv
 │       └── load_geographic_data.sql
 ├── scripts/
-│   └── setup-database.sh       # Setup automation
+│   ├── setup-database.sh       # Setup automation
+│   └── verify-setup.sh         # Verification script
 ├── exercises/
-│   ├── 01-basic-queries/
-│   ├── 02-joins/
-│   ├── 03-aggregations/
-│   ├── 04-subqueries/
-│   ├── 05-window-functions/
-│   └── 06-fraud-detection/
+│   ├── 01-basic-queries/       # SQL fundamentals
+│   ├── 02-customer-analytics/  # ⭐ Customer insights
+│   ├── 03-sales-analysis/      # ⭐ Sales & revenue
+│   ├── 04-kpi-dashboards/      # ⭐ KPI tracking
+│   ├── 05-advanced-sql/        # Advanced techniques
+│   └── 06-fraud-detection/     # Fraud patterns
 └── docs/
-    ├── data-model.md
-    ├── fraud-patterns.md
-    └── setup-guide.md
+    ├── DATA_MODELS.md          # ⭐ Complete model documentation
+    ├── WHATS_NEW.md            # ⭐ Recent changes
+    └── QUICKSTART.md           # Quick start guide
 ```
 
 ## 🔧 Configuration
@@ -200,8 +280,8 @@ SQL/
 Edit `docker-compose.yml` to customize:
 
 ```yaml
-POSTGRES_DB: fraud_detection
-POSTGRES_USER: fraud_analyst
+POSTGRES_DB: business_analytics
+POSTGRES_USER: data_analyst
 POSTGRES_PASSWORD: SecurePass123!
 ```
 
@@ -224,15 +304,46 @@ All scripts are **idempotent** - safe to run multiple times:
 
 ## 🎓 Sample Queries
 
-### Find High-Risk Customers
+### Customer Analytics: High-Value Customers
 ```sql
-SELECT customer_id, first_name, last_name, risk_score
-FROM customers
-WHERE risk_score > 80
-ORDER BY risk_score DESC;
+SELECT
+    c.customer_id, c.first_name, c.last_name,
+    clv.clv_score, cs.segment_name
+FROM customers c
+JOIN customer_lifetime_value clv ON c.customer_id = clv.customer_id
+JOIN customer_segments cs ON clv.segment_id = cs.segment_id
+WHERE cs.segment_name IN ('VIP', 'High Value')
+ORDER BY clv.clv_score DESC
+LIMIT 20;
 ```
 
-### Detect Velocity Fraud
+### Sales Analytics: Top Products
+```sql
+SELECT
+    p.product_name, p.product_category,
+    COUNT(st.transaction_id) as sales_count,
+    SUM(st.total_amount) as total_revenue
+FROM product_catalog p
+JOIN sales_transactions st ON p.product_id = st.product_id
+GROUP BY p.product_id, p.product_name, p.product_category
+ORDER BY total_revenue DESC
+LIMIT 10;
+```
+
+### KPI Dashboard: Current Status
+```sql
+SELECT
+    kd.kpi_name, kd.kpi_category,
+    dm.metric_value, kd.target_value,
+    dm.status
+FROM kpi_definitions kd
+JOIN daily_metrics dm ON kd.kpi_id = dm.kpi_id
+WHERE dm.metric_date = CURRENT_DATE
+  AND kd.is_active = TRUE
+ORDER BY kd.kpi_category, kd.kpi_name;
+```
+
+### Fraud Detection: Velocity Fraud
 ```sql
 SELECT account_id, COUNT(*) as txn_count, SUM(amount) as total
 FROM transactions

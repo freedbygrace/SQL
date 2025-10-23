@@ -1,4 +1,4 @@
-# 🎉 Financial Fraud Detection Database - Setup Complete!
+# 🎉 Business Analytics Database - Setup Complete!
 
 ## ✅ What Has Been Created
 
@@ -9,9 +9,11 @@
 - ✅ Persistent volumes for data
 - ✅ Health checks and auto-restart
 
-### 2. **Database Schema (20+ Tables)**
+### 2. **Database Schema (39 Tables Across 4 Business Models)**
 
-#### Core Tables
+#### Model 1: Fraud Detection (20 tables)
+
+**Core Tables:**
 - ✅ `customers` - 100K customer records with KYC data
 - ✅ `accounts` - 150K bank accounts (checking, savings, credit)
 - ✅ `cards` - 200K payment cards
@@ -19,13 +21,13 @@
 - ✅ `merchants` - 50K merchants across 35 categories
 - ✅ `devices` - 75K device fingerprints
 
-#### Fraud Detection Tables
+**Fraud Detection Tables:**
 - ✅ `alerts` - System-generated fraud alerts
 - ✅ `fraud_cases` - Confirmed fraud investigations
 - ✅ `case_transactions` - Links transactions to cases
 - ✅ `case_alerts` - Links alerts to cases
 
-#### Supporting Tables
+**Supporting Tables:**
 - ✅ `countries` - 40 countries with risk levels
 - ✅ `merchant_categories` - 35 MCC categories
 - ✅ `transaction_types` - 15 transaction types
@@ -36,6 +38,30 @@
 - ✅ `customer_relationships` - Network analysis
 - ✅ `suspicious_activity_reports` - SAR filings
 - ✅ `audit_log` - Complete audit trail
+
+#### Model 2: Customer Analytics (5 tables) ⭐ NEW
+- ✅ `customer_segments` - Customer classification (VIP, High Value, etc.)
+- ✅ `customer_lifetime_value` - CLV calculations for all customers
+- ✅ `churn_predictions` - Customer retention risk analysis
+- ✅ `customer_satisfaction` - NPS/CSAT scores and feedback
+- ✅ `engagement_metrics` - Customer interaction tracking
+
+#### Model 3: Sales & Revenue Analytics (6 tables) ⭐ NEW
+- ✅ `product_catalog` - 24 products across categories
+- ✅ `sales_transactions` - 1M sales records linked to products
+- ✅ `sales_targets` - Performance goals and targets
+- ✅ `sales_performance` - Aggregated performance metrics
+- ✅ `revenue_forecasts` - Revenue predictions and variance
+
+#### Model 4: KPI & Metrics (8 tables) ⭐ NEW
+- ✅ `kpi_definitions` - Master KPI catalog (16 KPIs)
+- ✅ `daily_metrics` - Daily operational snapshots (90 days)
+- ✅ `monthly_summaries` - Monthly business summaries (24 months)
+- ✅ `trend_analysis` - Statistical trend tracking
+- ✅ `dashboard_snapshots` - Pre-calculated dashboard data
+- ✅ `report_definitions` - Standard report catalog
+- ✅ `report_executions` - Report run history
+- ✅ `data_quality_checks` - Data validation tracking
 
 ### 3. **Realistic Geographic Data**
 - ✅ 100 US cities with matching states
