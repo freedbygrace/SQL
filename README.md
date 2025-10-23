@@ -108,11 +108,23 @@ git clone https://github.com/freedbygrace/SQL.git
 cd SQL
 ```
 
-### 2. Make Scripts Executable
+### 2. Set Proper Permissions
 ```bash
-# Make all .sh files executable recursively
-find . -name "*.sh" -exec chmod +x {} \;
+# Option A: Use the automated script (recommended)
+chmod +x scripts/fix-permissions.sh
+./scripts/fix-permissions.sh
+
+# Option B: Manual setup
+sudo chown -R $USER:$USER .                    # Take ownership
+find . -name "*.sh" -exec chmod +x {} \;       # Make scripts executable
+chmod -R 755 data/ schema/ scripts/ docker/    # Set directory permissions
 ```
+
+**Why this is important:**
+- ✅ Ensures your user owns all files (prevents permission denied errors)
+- ✅ Makes all shell scripts executable
+- ✅ Allows Docker to read/write bind-mounted directories (data/, schema/, docker/)
+- ✅ Prevents "permission denied" errors with Docker volumes
 
 ### 3. Install Dependencies (Optional)
 ```bash

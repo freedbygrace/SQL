@@ -287,9 +287,10 @@ main() {
     echo -e "${YELLOW}Next steps:${NC}"
     echo -e "  1. If Docker was just installed, you may need to log out and back in"
     echo -e "  2. Start Docker if it's not running"
-    echo -e "  3. Run: ${GREEN}docker-compose up -d${NC}"
-    echo -e "  4. Run: ${GREEN}./scripts/setup-database.sh${NC}"
-    echo -e "  5. Run: ${GREEN}./data/generate_data.sh${NC}"
+    echo -e "  3. Fix permissions: ${GREEN}./scripts/fix-permissions.sh${NC}"
+    echo -e "  4. Start containers: ${GREEN}docker-compose up -d${NC}"
+    echo -e "  5. Setup database: ${GREEN}./scripts/setup-database.sh${NC}"
+    echo -e "  6. Generate data: ${GREEN}./data/generate_data.sh${NC}"
     echo ""
 }
 

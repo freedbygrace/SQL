@@ -2,12 +2,38 @@
 
 ## 🚀 Get Up and Running in 5 Minutes
 
-### Step 0: Make Scripts Executable
+### Step 0: Set Proper Permissions
 
+**Option A: Automated (Recommended)**
 ```bash
+# Use the fix-permissions script
+chmod +x scripts/fix-permissions.sh
+./scripts/fix-permissions.sh
+```
+
+**Option B: Manual**
+```bash
+# Take ownership of the cloned repository
+sudo chown -R $USER:$USER .
+
 # Make all .sh files executable recursively
 find . -name "*.sh" -exec chmod +x {} \;
+
+# Set proper permissions for directories
+chmod -R 755 data/ schema/ scripts/ docker/
 ```
+
+**Why this is important:**
+- **Ownership:** Ensures your user owns all files (prevents permission denied errors)
+- **Executable scripts:** Makes all shell scripts runnable
+- **Directory permissions:** Allows Docker to read/write bind-mounted directories
+- **Prevents errors:** Avoids "permission denied" issues with Docker volumes
+
+**What the script does:**
+1. ✅ Takes ownership of all repository files
+2. ✅ Makes all `.sh` files executable (found 6 scripts)
+3. ✅ Sets proper permissions for data/, schema/, scripts/, docker/, exercises/, docs/
+4. ✅ Verifies permissions are correct
 
 ### Step 1: Install Dependencies (Optional - 5 minutes)
 

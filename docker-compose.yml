@@ -1,3 +1,11 @@
+# ============================================================================
+# Business Analytics Database - Docker Compose Configuration
+# ============================================================================
+# IMPORTANT: Before running docker-compose up, ensure proper permissions:
+#   Run: ./scripts/fix-permissions.sh
+#   Or:  sudo chown -R $USER:$USER . && chmod -R 755 data/ schema/ scripts/
+# ============================================================================
+
 services:
   postgres:
     image: postgres:16-alpine
@@ -11,8 +19,8 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./schema:/docker-entrypoint-initdb.d
-      - ./data:/data
+      - ./schema:/docker-entrypoint-initdb.d  # Bind mount - requires proper permissions
+      - ./data:/data                          # Bind mount - requires proper permissions
     networks:
       - analytics_network
     healthcheck:
