@@ -108,14 +108,19 @@ git clone https://github.com/freedbygrace/SQL.git
 cd SQL
 ```
 
-### 2. Install Dependencies (Optional)
+### 2. Make Scripts Executable
+```bash
+# Make all .sh files executable recursively
+find . -name "*.sh" -exec chmod +x {} \;
+```
+
+### 3. Install Dependencies (Optional)
 ```bash
 # Only if you don't have Docker, psql, etc.
-chmod +x scripts/install-dependencies.sh
 ./scripts/install-dependencies.sh
 ```
 
-### 3. Start the Database
+### 4. Start the Database
 ```bash
 docker-compose up -d
 ```
@@ -124,17 +129,15 @@ This starts:
 - **PostgreSQL 16** on port `5432`
 - **DB-UI** web interface on port `3000`
 
-### 4. Initialize the Schema
+### 5. Initialize the Schema
 ```bash
-chmod +x scripts/setup-database.sh
 ./scripts/setup-database.sh
 ```
 
 **Note:** The script will automatically check for required dependencies and prompt you to install them if missing.
 
-### 5. Generate Test Data
+### 6. Generate Test Data
 ```bash
-chmod +x data/generate_data.sh
 ./data/generate_data.sh
 ```
 

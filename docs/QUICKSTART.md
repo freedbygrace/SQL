@@ -2,14 +2,18 @@
 
 ## 🚀 Get Up and Running in 5 Minutes
 
-### Step 0: Install Dependencies (Optional - 5 minutes)
+### Step 0: Make Scripts Executable
+
+```bash
+# Make all .sh files executable recursively
+find . -name "*.sh" -exec chmod +x {} \;
+```
+
+### Step 1: Install Dependencies (Optional - 5 minutes)
 
 **If you don't have Docker, PostgreSQL client (psql), or other required tools:**
 
 ```bash
-# Make script executable
-chmod +x scripts/install-dependencies.sh
-
 # Run the installer
 ./scripts/install-dependencies.sh
 ```
@@ -25,7 +29,7 @@ chmod +x scripts/install-dependencies.sh
 
 ---
 
-### Step 1: Start Docker Containers (1 minute)
+### Step 2: Start Docker Containers (1 minute)
 
 ```bash
 # From the project root directory
@@ -46,12 +50,9 @@ You should see both `business_analytics_db` and `business_analytics_ui` running.
 
 ---
 
-### Step 2: Initialize Database Schema (1 minute)
+### Step 3: Initialize Database Schema (1 minute)
 
 ```bash
-# Make script executable (first time only)
-chmod +x scripts/setup-database.sh
-
 # Run setup
 ./scripts/setup-database.sh
 ```
@@ -71,12 +72,9 @@ chmod +x scripts/setup-database.sh
 
 ---
 
-### Step 3: Generate Test Data (15-30 minutes)
+### Step 4: Generate Test Data (15-30 minutes)
 
 ```bash
-# Make script executable (first time only)
-chmod +x data/generate_data.sh
-
 # Run data generation
 ./data/generate_data.sh
 ```
