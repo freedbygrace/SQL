@@ -1,0 +1,190 @@
+city,country,country_code
+Toronto,Canada,CA
+Vancouver,Canada,CA
+Montreal,Canada,CA
+Calgary,Canada,CA
+Ottawa,Canada,CA
+London,United Kingdom,GB
+Manchester,United Kingdom,GB
+Birmingham,United Kingdom,GB
+Edinburgh,United Kingdom,GB
+Glasgow,United Kingdom,GB
+Berlin,Germany,DE
+Munich,Germany,DE
+Hamburg,Germany,DE
+Frankfurt,Germany,DE
+Cologne,Germany,DE
+Paris,France,FR
+Lyon,France,FR
+Marseille,France,FR
+Toulouse,France,FR
+Nice,France,FR
+Rome,Italy,IT
+Milan,Italy,IT
+Naples,Italy,IT
+Turin,Italy,IT
+Florence,Italy,IT
+Madrid,Spain,ES
+Barcelona,Spain,ES
+Valencia,Spain,ES
+Seville,Spain,ES
+Bilbao,Spain,ES
+Sydney,Australia,AU
+Melbourne,Australia,AU
+Brisbane,Australia,AU
+Perth,Australia,AU
+Adelaide,Australia,AU
+Tokyo,Japan,JP
+Osaka,Japan,JP
+Kyoto,Japan,JP
+Yokohama,Japan,JP
+Nagoya,Japan,JP
+Beijing,China,CN
+Shanghai,China,CN
+Guangzhou,China,CN
+Shenzhen,China,CN
+Chengdu,China,CN
+Mumbai,India,IN
+Delhi,India,IN
+Bangalore,India,IN
+Hyderabad,India,IN
+Chennai,India,IN
+Sao Paulo,Brazil,BR
+Rio de Janeiro,Brazil,BR
+Brasilia,Brazil,BR
+Salvador,Brazil,BR
+Fortaleza,Brazil,BR
+Mexico City,Mexico,MX
+Guadalajara,Mexico,MX
+Monterrey,Mexico,MX
+Puebla,Mexico,MX
+Tijuana,Mexico,MX
+Moscow,Russia,RU
+Saint Petersburg,Russia,RU
+Novosibirsk,Russia,RU
+Yekaterinburg,Russia,RU
+Kazan,Russia,RU
+Lagos,Nigeria,NG
+Kano,Nigeria,NG
+Ibadan,Nigeria,NG
+Abuja,Nigeria,NG
+Port Harcourt,Nigeria,NG
+Karachi,Pakistan,PK
+Lahore,Pakistan,PK
+Islamabad,Pakistan,PK
+Rawalpindi,Pakistan,PK
+Faisalabad,Pakistan,PK
+Tehran,Iran,IR
+Mashhad,Iran,IR
+Isfahan,Iran,IR
+Karaj,Iran,IR
+Tabriz,Iran,IR
+Pyongyang,North Korea,KP
+Hamhung,North Korea,KP
+Chongjin,North Korea,KP
+Nampo,North Korea,KP
+Wonsan,North Korea,KP
+Damascus,Syria,SY
+Aleppo,Syria,SY
+Homs,Syria,SY
+Latakia,Syria,SY
+Hama,Syria,SY
+Caracas,Venezuela,VE
+Maracaibo,Venezuela,VE
+Valencia,Venezuela,VE
+Barquisimeto,Venezuela,VE
+Maracay,Venezuela,VE
+Havana,Cuba,CU
+Santiago de Cuba,Cuba,CU
+Camaguey,Cuba,CU
+Holguin,Cuba,CU
+Santa Clara,Cuba,CU
+Yangon,Myanmar,MM
+Mandalay,Myanmar,MM
+Naypyidaw,Myanmar,MM
+Mawlamyine,Myanmar,MM
+Bago,Myanmar,MM
+Kabul,Afghanistan,AF
+Kandahar,Afghanistan,AF
+Herat,Afghanistan,AF
+Mazar-i-Sharif,Afghanistan,AF
+Jalalabad,Afghanistan,AF
+Baghdad,Iraq,IQ
+Basra,Iraq,IQ
+Mosul,Iraq,IQ
+Erbil,Iraq,IQ
+Kirkuk,Iraq,IQ
+Tripoli,Libya,LY
+Benghazi,Libya,LY
+Misrata,Libya,LY
+Zawiya,Libya,LY
+Bayda,Libya,LY
+Khartoum,Sudan,SD
+Omdurman,Sudan,SD
+Port Sudan,Sudan,SD
+Kassala,Sudan,SD
+Nyala,Sudan,SD
+Mogadishu,Somalia,SO
+Hargeisa,Somalia,SO
+Bosaso,Somalia,SO
+Kismayo,Somalia,SO
+Merca,Somalia,SO
+Sanaa,Yemen,YE
+Aden,Yemen,YE
+Taiz,Yemen,YE
+Hodeidah,Yemen,YE
+Ibb,Yemen,YE
+Harare,Zimbabwe,ZW
+Bulawayo,Zimbabwe,ZW
+Chitungwiza,Zimbabwe,ZW
+Mutare,Zimbabwe,ZW
+Gweru,Zimbabwe,ZW
+Amsterdam,Netherlands,NL
+Rotterdam,Netherlands,NL
+The Hague,Netherlands,NL
+Utrecht,Netherlands,NL
+Eindhoven,Netherlands,NL
+Stockholm,Sweden,SE
+Gothenburg,Sweden,SE
+Malmo,Sweden,SE
+Uppsala,Sweden,SE
+Vasteras,Sweden,SE
+Oslo,Norway,NO
+Bergen,Norway,NO
+Trondheim,Norway,NO
+Stavanger,Norway,NO
+Drammen,Norway,NO
+Copenhagen,Denmark,DK
+Aarhus,Denmark,DK
+Odense,Denmark,DK
+Aalborg,Denmark,DK
+Esbjerg,Denmark,DK
+Helsinki,Finland,FI
+Espoo,Finland,FI
+Tampere,Finland,FI
+Vantaa,Finland,FI
+Oulu,Finland,FI
+Zurich,Switzerland,CH
+Geneva,Switzerland,CH
+Basel,Switzerland,CH
+Lausanne,Switzerland,CH
+Bern,Switzerland,CH
+Singapore,Singapore,SG
+Hong Kong,Hong Kong,HK
+Kowloon,Hong Kong,HK
+Seoul,South Korea,KR
+Busan,South Korea,KR
+Incheon,South Korea,KR
+Daegu,South Korea,KR
+Daejeon,South Korea,KR
+Taipei,Taiwan,TW
+Kaohsiung,Taiwan,TW
+Taichung,Taiwan,TW
+Tainan,Taiwan,TW
+Hsinchu,Taiwan,TW
+Auckland,New Zealand,NZ
+Wellington,New Zealand,NZ
+Christchurch,New Zealand,NZ
+Hamilton,New Zealand,NZ
+Tauranga,New Zealand,NZ
+
