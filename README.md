@@ -102,6 +102,38 @@ This will automatically install:
 
 ---
 
+## 🚀 Quick Start
+
+### Option A: One-Command Deployment (Recommended)
+
+```bash
+# Clone the repository
+git clone https://github.com/freedbygrace/SQL.git
+cd SQL
+
+# Deploy everything with one command
+chmod +x deploy.sh
+./deploy.sh
+```
+
+**That's it!** The master deployment script will:
+1. ✅ Tear down existing containers
+2. ✅ Remove old data volumes
+3. ✅ Fix file permissions
+4. ✅ Start fresh containers
+5. ✅ Initialize database schema
+6. ✅ Generate test data (15-30 minutes)
+7. ✅ Verify everything works
+
+**IDEMPOTENT:** Safe to run multiple times - rebuilds from scratch each time.
+
+---
+
+### Option B: Manual Step-by-Step
+
+<details>
+<summary>Click to expand manual installation steps</summary>
+
 ### 1. Clone the Repository
 ```bash
 git clone https://github.com/freedbygrace/SQL.git
@@ -155,7 +187,11 @@ This starts:
 
 ⏱️ **Note:** Data generation takes 15-30 minutes depending on your system.
 
-### 6. Access the Database
+</details>
+
+---
+
+## 📊 Access the Database
 
 **Option A: pgAdmin Web Interface**
 ```

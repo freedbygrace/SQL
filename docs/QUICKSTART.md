@@ -1,6 +1,35 @@
 # Quick Start Guide
 
-## 🚀 Get Up and Running in 5 Minutes
+## ⚡ Super Quick Start (One Command - Recommended)
+
+```bash
+# Clone the repository
+git clone https://github.com/freedbygrace/SQL.git
+cd SQL
+
+# Deploy everything
+chmod +x deploy.sh
+./deploy.sh
+```
+
+**Done!** The master deployment script handles everything:
+- ✅ Tears down old containers
+- ✅ Removes old data
+- ✅ Fixes permissions
+- ✅ Starts containers
+- ✅ Initializes database
+- ✅ Generates test data
+- ✅ Verifies deployment
+
+**Time:** 15-30 minutes (mostly data generation)
+
+Skip to [Step 4: Access the Database](#step-4-access-the-database) after deployment completes.
+
+---
+
+## 📋 Manual Step-by-Step (Alternative)
+
+If you prefer to run each step manually:
 
 ### Step 0: Set Proper Permissions
 
