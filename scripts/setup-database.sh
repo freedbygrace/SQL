@@ -179,7 +179,7 @@ echo ""
 
 # Query 4: Show fraud types
 echo -e "${YELLOW}[4/5] Fraud types:${NC}"
-execute_sql "SELECT fraud_type_code, fraud_type_name, severity FROM fraud_types ORDER BY severity DESC, fraud_type_name;"
+execute_sql "SELECT fraud_code, fraud_name, severity FROM fraud_types ORDER BY severity DESC, fraud_name;"
 echo ""
 
 # Query 5: Show customer segments
