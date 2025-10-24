@@ -49,9 +49,61 @@ command_exists() {
     command -v "$1" >/dev/null 2>&1
 }
 
+# Install Python 3
+install_python() {
+    echo -e "\n${YELLOW}[1/5] Checking Python 3...${NC}"
+
+    if command_exists python3; then
+        PYTHON_VERSION=$(python3 --version | awk '{print $2}')
+        echo -e "${GREEN}✓ Python 3 is already installed (version $PYTHON_VERSION)${NC}"
+        return 0
+    fi
+
+    echo -e "${YELLOW}Installing Python 3...${NC}"
+
+    case $OS in
+        ubuntu|debian)
+            sudo apt-get update
+            sudo apt-get install -y python3 python3-pip
+            ;;
+        centos|rhel|fedora)
+            sudo yum install -y python3 python3-pip
+            ;;
+        arch)
+            sudo pacman -S --noconfirm python python-pip
+            ;;
+        macos)
+            if command_exists brew; then
+                brew install python3
+            else
+                echo -e "${RED}✗ Homebrew not found. Please install Homebrew first: https://brew.sh${NC}"
+                exit 1
+            fi
+            ;;
+        windows)
+            echo -e "${YELLOW}On Windows, please install Python 3 manually:${NC}"
+            echo -e "  1. Download from: https://www.python.org/downloads/"
+            echo -e "  2. Or use WSL2 with Ubuntu"
+            echo -e "  3. Make sure to check 'Add Python to PATH' during installation"
+            exit 1
+            ;;
+        *)
+            echo -e "${RED}✗ Unsupported OS. Please install Python 3 manually.${NC}"
+            exit 1
+            ;;
+    esac
+
+    if command_exists python3; then
+        echo -e "${GREEN}✓ Python 3 installed successfully${NC}"
+    else
+        echo -e "${RED}✗ Failed to install Python 3${NC}"
+        exit 1
+    fi
+}
+
 # Install PostgreSQL client
 install_psql() {
-    echo -e "\n${YELLOW}[1/4] Checking PostgreSQL client (psql)...${NC}"
+    echo -e "\n${YELLOW}[2/5] Checking PostgreSQL client (psql)...${NC}"
     
     if command_exists psql; then
         PSQL_VERSION=$(psql --version | awk '{print $3}')
@@ -103,7 +155,7 @@ install_psql() {
 
 # Install Docker
 install_docker() {
-    echo -e "\n${YELLOW}[2/4] Checking Docker...${NC}"
+    echo -e "\n${YELLOW}[3/5] Checking Docker...${NC}"
     
     if command_exists docker; then
         DOCKER_VERSION=$(docker --version | awk '{print $3}' | sed 's/,//')
@@ -163,7 +215,7 @@ install_docker() {
 
 # Install Docker Compose
 install_docker_compose() {
-    echo -e "\n${YELLOW}[3/4] Checking Docker Compose...${NC}"
+    echo -e "\n${YELLOW}[4/5] Checking Docker Compose...${NC}"
     
     # Check for docker-compose (standalone) or docker compose (plugin)
     if command_exists docker-compose || docker compose version >/dev/null 2>&1; then
@@ -209,7 +261,7 @@ install_docker_compose() {
 
 # Install utility packages
 install_utilities() {
-    echo -e "\n${YELLOW}[4/4] Checking utility packages...${NC}"
+    echo -e "\n${YELLOW}[5/5] Checking utility packages...${NC}"
     
     local missing_packages=()
     
@@ -265,6 +317,7 @@ main() {
     
     echo -e "\n${BLUE}Starting dependency installation...${NC}"
     echo -e "${YELLOW}This script will install:${NC}"
+    echo -e "  - Python 3 (for CSV data generation)"
     echo -e "  - PostgreSQL client (psql)"
     echo -e "  - Docker"
     echo -e "  - Docker Compose"
@@ -274,7 +327,8 @@ main() {
     echo -e "${YELLOW}Press Ctrl+C to cancel, or wait 5 seconds to continue...${NC}"
     sleep 5
     echo ""
-    
+
+    install_python
     install_psql
     install_docker
     install_docker_compose

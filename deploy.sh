@@ -40,11 +40,12 @@ echo ""
 echo -e "${YELLOW}This script will:${NC}"
 echo -e "  ${BLUE}1.${NC} Tear down existing containers"
 echo -e "  ${BLUE}2.${NC} Remove all data volumes"
-echo -e "  ${BLUE}3.${NC} Fix file permissions"
-echo -e "  ${BLUE}4.${NC} Start fresh containers"
-echo -e "  ${BLUE}5.${NC} Initialize database schema"
-echo -e "  ${BLUE}6.${NC} Generate test data"
-echo -e "  ${BLUE}7.${NC} Verify deployment"
+echo -e "  ${BLUE}3.${NC} Check and install dependencies (Python, psql, Docker)"
+echo -e "  ${BLUE}4.${NC} Fix file permissions"
+echo -e "  ${BLUE}5.${NC} Start fresh containers"
+echo -e "  ${BLUE}6.${NC} Initialize database schema"
+echo -e "  ${BLUE}7.${NC} Generate test data"
+echo -e "  ${BLUE}8.${NC} Verify deployment"
 echo ""
 echo -e "${YELLOW}⚠️  WARNING: This will DELETE all existing data!${NC}"
 echo ""
@@ -84,7 +85,38 @@ fi
 
 echo ""
 echo -e "${MAGENTA}════════════════════════════════════════════════════════════════════════════${NC}"
-echo -e "${CYAN}[STEP 3/7] Fixing file permissions...${NC}"
+echo -e "${CYAN}[STEP 3/7] Checking dependencies...${NC}"
+echo -e "${MAGENTA}════════════════════════════════════════════════════════════════════════════${NC}"
+echo ""
+
+# Check for required dependencies
+MISSING_DEPS=()
+
+if ! command -v python3 >/dev/null 2>&1; then
+    MISSING_DEPS+=("python3")
+fi
+
+if ! command -v psql >/dev/null 2>&1; then
+    MISSING_DEPS+=("psql")
+fi
+
+if ! command -v docker >/dev/null 2>&1; then
+    MISSING_DEPS+=("docker")
+fi
+
+if [ ${#MISSING_DEPS[@]} -gt 0 ]; then
+    echo -e "${YELLOW}⚠ Missing dependencies: ${MISSING_DEPS[*]}${NC}"
+    echo -e "${YELLOW}Running dependency installer...${NC}"
+    echo ""
+    chmod +x scripts/install-dependencies.sh 2>/dev/null || true
+    ./scripts/install-dependencies.sh
+else
+    echo -e "${GREEN}✓ All dependencies are installed${NC}"
+fi
+
+echo ""
+echo -e "${MAGENTA}════════════════════════════════════════════════════════════════════════════${NC}"
+echo -e "${CYAN}[STEP 4/7] Fixing file permissions...${NC}"
 echo -e "${MAGENTA}════════════════════════════════════════════════════════════════════════════${NC}"
 echo ""
 
@@ -107,7 +139,7 @@ fi
 
 echo ""
 echo -e "${MAGENTA}════════════════════════════════════════════════════════════════════════════${NC}"
-echo -e "${CYAN}[STEP 4/7] Starting containers...${NC}"
+echo -e "${CYAN}[STEP 5/8] Starting containers...${NC}"
 echo -e "${MAGENTA}════════════════════════════════════════════════════════════════════════════${NC}"
 echo ""
 
@@ -147,7 +179,7 @@ echo -e "${YELLOW}Note: pgAdmin may take 30-60 seconds to fully initialize${NC}"
 
 echo ""
 echo -e "${MAGENTA}════════════════════════════════════════════════════════════════════════════${NC}"
-echo -e "${CYAN}[STEP 5/7] Initializing database schema...${NC}"
+echo -e "${CYAN}[STEP 6/8] Initializing database schema...${NC}"
 echo -e "${MAGENTA}════════════════════════════════════════════════════════════════════════════${NC}"
 echo ""
 
@@ -155,7 +187,7 @@ echo ""
 
 echo ""
 echo -e "${MAGENTA}════════════════════════════════════════════════════════════════════════════${NC}"
-echo -e "${CYAN}[STEP 6/7] Generating test data...${NC}"
+echo -e "${CYAN}[STEP 7/8] Generating test data...${NC}"
 echo -e "${MAGENTA}════════════════════════════════════════════════════════════════════════════${NC}"
 echo ""
 echo -e "${YELLOW}⏱️  This will take 15-30 minutes depending on your system...${NC}"
@@ -165,7 +197,7 @@ echo ""
 
 echo ""
 echo -e "${MAGENTA}════════════════════════════════════════════════════════════════════════════${NC}"
-echo -e "${CYAN}[STEP 7/7] Verifying deployment...${NC}"
+echo -e "${CYAN}[STEP 8/8] Verifying deployment...${NC}"
 echo -e "${MAGENTA}════════════════════════════════════════════════════════════════════════════${NC}"
 echo ""
 
