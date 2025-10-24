@@ -43,8 +43,7 @@ services:
     networks:
       - analytics_network
     depends_on:
-      postgres:
-        condition: service_healthy
+      - postgres
     restart: unless-stopped
     volumes:
       - pgadmin_data:/var/lib/pgadmin

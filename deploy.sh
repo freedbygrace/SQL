@@ -111,14 +111,16 @@ echo -e "${CYAN}[STEP 4/7] Starting containers...${NC}"
 echo -e "${MAGENTA}════════════════════════════════════════════════════════════════════════════${NC}"
 echo ""
 
-docker-compose up -d
+# Start containers without waiting for health checks (pgAdmin takes longer)
+docker-compose up -d --no-deps postgres
+echo -e "${GREEN}✓ PostgreSQL container started${NC}"
 
 echo ""
 echo -e "${YELLOW}Waiting for PostgreSQL to be ready...${NC}"
 sleep 5
 
 # Wait for PostgreSQL to be healthy
-MAX_WAIT=60
+MAX_WAIT=120
 WAITED=0
 while [ $WAITED -lt $MAX_WAIT ]; do
     if docker exec business_analytics_db pg_isready -U data_analyst -d business_analytics >/dev/null 2>&1; then
@@ -135,6 +137,13 @@ if [ $WAITED -ge $MAX_WAIT ]; then
     echo -e "${YELLOW}Check logs with: docker-compose logs postgres${NC}"
     exit 1
 fi
+
+# Now start pgAdmin (doesn't block database operations)
+echo ""
+echo -e "${YELLOW}Starting pgAdmin...${NC}"
+docker-compose up -d pgadmin
+echo -e "${GREEN}✓ pgAdmin container started${NC}"
+echo -e "${YELLOW}Note: pgAdmin may take 30-60 seconds to fully initialize${NC}"
 
 echo ""
 echo -e "${MAGENTA}════════════════════════════════════════════════════════════════════════════${NC}"
@@ -179,6 +188,7 @@ echo -e "${BLUE}📊 pgAdmin Web Interface:${NC}"
 echo -e "   URL:      ${GREEN}http://localhost:3000${NC}"
 echo -e "   Email:    ${GREEN}admin@example.com${NC}"
 echo -e "   Password: ${GREEN}SecurePass123!${NC}"
+echo -e "   ${YELLOW}Note: pgAdmin may take 30-60 seconds to fully start${NC}"
 echo ""
 echo -e "${BLUE}🗄️  PostgreSQL Database:${NC}"
 echo -e "   Host:     ${GREEN}localhost${NC}"
@@ -206,10 +216,20 @@ echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━�
 echo -e "${YELLOW}Useful Commands:${NC}"
 echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 echo ""
-echo -e "  ${BLUE}View logs:${NC}        ${GREEN}docker-compose logs -f${NC}"
-echo -e "  ${BLUE}Stop containers:${NC}  ${GREEN}docker-compose down${NC}"
-echo -e "  ${BLUE}Restart:${NC}          ${GREEN}docker-compose restart${NC}"
-echo -e "  ${BLUE}Redeploy:${NC}         ${GREEN}./deploy.sh${NC}"
+echo -e "  ${BLUE}Check pgAdmin status:${NC}  ${GREEN}docker logs business_analytics_ui${NC}"
+echo -e "  ${BLUE}View all logs:${NC}         ${GREEN}docker-compose logs -f${NC}"
+echo -e "  ${BLUE}Stop containers:${NC}       ${GREEN}docker-compose down${NC}"
+echo -e "  ${BLUE}Restart containers:${NC}    ${GREEN}docker-compose restart${NC}"
+echo -e "  ${BLUE}Redeploy everything:${NC}   ${GREEN}./deploy.sh${NC}"
+echo ""
+echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+echo -e "${YELLOW}Troubleshooting:${NC}"
+echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+echo ""
+echo -e "  ${BLUE}If pgAdmin shows 'connection refused':${NC}"
+echo -e "    - Wait 30-60 seconds for pgAdmin to fully initialize"
+echo -e "    - Check status: ${GREEN}docker logs business_analytics_ui${NC}"
+echo -e "    - Look for: ${GREEN}'Listening at: http://[::]:80'${NC}"
 echo ""
 echo -e "${GREEN}Happy learning! 🚀${NC}"
 echo ""
