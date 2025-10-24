@@ -184,7 +184,7 @@ echo ""
 
 # Query 5: Show customer segments
 echo -e "${YELLOW}[5/5] Customer segments:${NC}"
-execute_sql "SELECT segment_code, segment_name, description FROM customer_segments ORDER BY segment_name;"
+execute_sql "SELECT segment_name, segment_description FROM customer_segments ORDER BY segment_name;"
 echo ""
 
 echo -e "${GREEN}============================================================================${NC}"
