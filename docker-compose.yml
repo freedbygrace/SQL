@@ -30,24 +30,24 @@ services:
       retries: 5
     restart: unless-stopped
 
-  db-ui:
-    image: ghcr.io/n7olkachev/db-ui:latest
-    platform: unknown/unknown
+  pgadmin:
+    image: dpage/pgadmin4:latest
     container_name: business_analytics_ui
     environment:
-      POSTGRES_HOST: postgres
-      POSTGRES_USER: data_analyst
-      POSTGRES_PASSWORD: SecurePass123!
-      POSTGRES_DB: business_analytics
-      POSTGRES_PORT: 5432
+      PGADMIN_DEFAULT_EMAIL: admin@businessanalytics.local
+      PGADMIN_DEFAULT_PASSWORD: SecurePass123!
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+      PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED: 'False'
     ports:
-      - "3000:3000"
+      - "3000:80"
     networks:
       - analytics_network
     depends_on:
       postgres:
         condition: service_healthy
     restart: unless-stopped
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
 
 networks:
   analytics_network:
@@ -55,5 +55,7 @@ networks:
 
 volumes:
   postgres_data:
+    driver: local
+  pgadmin_data:
     driver: local
 

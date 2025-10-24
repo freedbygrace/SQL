@@ -139,7 +139,7 @@ docker-compose up -d
 
 This starts:
 - **PostgreSQL 16** on port `5432`
-- **DB-UI** web interface on port `3000`
+- **pgAdmin 4** web interface on port `3000`
 
 ### 5. Initialize the Schema
 ```bash
@@ -157,10 +157,25 @@ This starts:
 
 ### 6. Access the Database
 
-**Option A: DB-UI Web Interface**
+**Option A: pgAdmin Web Interface**
 ```
 http://localhost:3000
 ```
+
+**Login credentials:**
+- Email: `admin@businessanalytics.local`
+- Password: `SecurePass123!`
+
+**First time setup:**
+1. After logging in, click "Add New Server"
+2. **General tab:** Name: `Business Analytics`
+3. **Connection tab:**
+   - Host: `postgres`
+   - Port: `5432`
+   - Database: `business_analytics`
+   - Username: `data_analyst`
+   - Password: `SecurePass123!`
+4. Click "Save"
 
 **Option B: Command Line**
 ```bash
@@ -446,7 +461,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## 🙏 Acknowledgments
 
 - PostgreSQL community
-- DB-UI project (https://github.com/n7olkachev/db-ui)
+- pgAdmin project (https://www.pgadmin.org/)
 - Financial crime investigation best practices
 
 ## 📧 Support

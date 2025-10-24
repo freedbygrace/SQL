@@ -64,7 +64,7 @@ docker-compose up -d
 
 **What this does:**
 - Starts PostgreSQL 16 database
-- Starts DB-UI web interface
+- Starts pgAdmin 4 web interface
 - Creates network and volumes
 
 **Verify it's running:**
@@ -138,18 +138,32 @@ The script shows progress for each step:
 
 ### Step 4: Access the Database
 
-#### Option A: DB-UI Web Interface (Recommended for Beginners)
+#### Option A: pgAdmin Web Interface (Recommended for Beginners)
 
 1. Open your browser to: **http://localhost:3000**
-2. You'll see the database tables in the sidebar
-3. Click any table to browse data
-4. Use the "Custom SQL" tab to run queries
+2. **Login:**
+   - Email: `admin@businessanalytics.local`
+   - Password: `SecurePass123!`
+3. **First time setup - Add Server:**
+   - Click "Add New Server"
+   - **General tab:** Name: `Business Analytics`
+   - **Connection tab:**
+     - Host: `postgres`
+     - Port: `5432`
+     - Database: `business_analytics`
+     - Username: `data_analyst`
+     - Password: `SecurePass123!`
+   - Click "Save"
+4. Navigate to: **Servers > Business Analytics > Databases > business_analytics > Schemas > public > Tables**
+5. Right-click any table and select "View/Edit Data" to browse
+6. Use **Tools > Query Tool** to run SQL queries
 
 **Features:**
-- Visual table browser
-- SQL query editor with syntax highlighting
-- Export results to CSV
-- Schema introspection
+- Professional database management interface
+- Visual query builder
+- Data export/import (CSV, JSON, etc.)
+- Schema visualization
+- Query history and favorites
 
 #### Option B: Command Line (psql)
 
@@ -366,7 +380,7 @@ docker-compose up -d
 
 ## 💡 Tips
 
-1. **Use DB-UI for exploration** - Great for browsing and understanding the schema
+1. **Use pgAdmin for exploration** - Great for browsing and understanding the schema
 2. **Use psql for practice** - Best for learning SQL commands
 3. **Start simple** - Begin with basic SELECT queries before complex joins
 4. **Check the exercises** - They're designed to build your skills progressively
