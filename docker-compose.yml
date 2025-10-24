@@ -32,7 +32,7 @@ services:
 
   db-ui:
     image: ghcr.io/n7olkachev/db-ui:latest
-    platform: linux/amd64
+    platform: unknown/unknown
     container_name: business_analytics_ui
     environment:
       POSTGRES_HOST: postgres
