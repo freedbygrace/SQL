@@ -190,10 +190,25 @@ echo -e "${MAGENTA}════════════════════�
 echo -e "${CYAN}[STEP 7/8] Generating test data...${NC}"
 echo -e "${MAGENTA}════════════════════════════════════════════════════════════════════════════${NC}"
 echo ""
-echo -e "${YELLOW}⏱️  This will take 15-30 minutes depending on your system...${NC}"
+echo -e "${YELLOW}⏱️  This will take 2-5 minutes depending on your system...${NC}"
 echo ""
 
-./data/generate_data.sh
+# Generate CSV files using Python
+echo -e "${CYAN}Generating CSV files...${NC}"
+python3 scripts/generate_csv_data.py
+if [ $? -ne 0 ]; then
+    echo -e "${RED}✗ CSV generation failed${NC}"
+    exit 1
+fi
+
+echo ""
+echo -e "${CYAN}Importing CSV data into PostgreSQL...${NC}"
+chmod +x scripts/import_csv_data.sh
+./scripts/import_csv_data.sh
+if [ $? -ne 0 ]; then
+    echo -e "${RED}✗ CSV import failed${NC}"
+    exit 1
+fi
 
 echo ""
 echo -e "${MAGENTA}════════════════════════════════════════════════════════════════════════════${NC}"

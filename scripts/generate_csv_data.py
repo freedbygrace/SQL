@@ -227,3 +227,219 @@ print(f"✓ Generated {NUM_CARDS:,} cards")
 print("[5/10] Generating transactions (this will take a few minutes)...")
 print(f"  Generating {NUM_TRANSACTIONS:,} transactions in batches...")
 
+transactions = []
+fraudulent_transactions = []
+batch_size = 100000
+start_date = datetime(2023, 1, 1)
+end_date = datetime(2024, 12, 31)
+
+with open(DATA_DIR / "transactions.csv", "w", newline="", encoding="utf-8") as f:
+    writer = csv.writer(f)
+    writer.writerow(["transaction_id", "account_id", "card_id", "merchant_id", "transaction_type",
+                     "amount", "currency", "transaction_date", "status", "is_flagged", "fraud_score",
+                     "ip_address", "device_id", "location_city", "location_country"])
+
+    for i in range(1, NUM_TRANSACTIONS + 1):
+        account_id = random.choice(accounts)
+        card_id = random.choice(cards) if random.random() > 0.3 else ""
+        merchant_id = random.choice(merchants) if random.random() > 0.1 else ""
+        trans_type = random.choice(TRANSACTION_TYPES)
+
+        # Determine if fraudulent
+        is_fraud = random.random() < FRAUD_RATE
+        fraud_score = round(random.uniform(70, 100), 2) if is_fraud else round(random.uniform(0, 30), 2)
+        is_flagged = is_fraud or (fraud_score > 60)
+
+        # Amount varies by transaction type
+        if trans_type in ["PURCHASE", "PAYMENT"]:
+            amount = round(random.uniform(5, 5000), 2)
+        elif trans_type in ["ATM_WITHDRAWAL", "TRANSFER_OUT"]:
+            amount = round(random.uniform(20, 2000), 2)
+        elif trans_type in ["WIRE_OUT", "WIRE_IN"]:
+            amount = round(random.uniform(1000, 50000), 2)
+        else:
+            amount = round(random.uniform(10, 1000), 2)
+
+        # Fraudulent transactions tend to be larger
+        if is_fraud:
+            amount = amount * random.uniform(2, 10)
+
+        city_idx = random.randint(0, len(CITIES) - 1)
+
+        transaction = [
+            i,  # transaction_id
+            account_id,
+            card_id,
+            merchant_id,
+            trans_type,
+            round(amount, 2),
+            "USD",
+            random_datetime(start_date, end_date).strftime("%Y-%m-%d %H:%M:%S"),
+            random.choice(["COMPLETED", "COMPLETED", "COMPLETED", "PENDING", "FAILED"]),
+            is_flagged,
+            fraud_score,
+            f"{random.randint(1, 255)}.{random.randint(0, 255)}.{random.randint(0, 255)}.{random.randint(0, 255)}",
+            random.randint(1, 75000) if random.random() > 0.2 else "",
+            CITIES[city_idx],
+            random.choice(COUNTRIES)
+        ]
+        writer.writerow(transaction)
+        transactions.append(i)
+
+        if is_fraud:
+            fraudulent_transactions.append(i)
+
+        if i % batch_size == 0:
+            print(f"  Generated {i:,} transactions...")
+
+print(f"✓ Generated {NUM_TRANSACTIONS:,} transactions ({len(fraudulent_transactions):,} fraudulent)")
+
+print("[6/10] Generating alerts...")
+alerts = []
+with open(DATA_DIR / "alerts.csv", "w", newline="", encoding="utf-8") as f:
+    writer = csv.writer(f)
+    writer.writerow(["alert_id", "transaction_id", "customer_id", "alert_type", "severity",
+                     "alert_date", "status", "assigned_to", "resolution_notes"])
+
+    alert_id = 1
+    for trans_id in fraudulent_transactions:
+        if random.random() > 0.3:  # 70% of fraudulent transactions generate alerts
+            alert = [
+                alert_id,
+                trans_id,
+                random.choice(customers),
+                random.choice(["UNUSUAL_AMOUNT", "UNUSUAL_LOCATION", "VELOCITY_CHECK", "BLACKLIST_MATCH"]),
+                random.choice(["LOW", "MEDIUM", "HIGH", "CRITICAL"]),
+                random_datetime(start_date, end_date).strftime("%Y-%m-%d %H:%M:%S"),
+                random.choice(["OPEN", "INVESTIGATING", "RESOLVED", "FALSE_POSITIVE"]),
+                f"analyst{random.randint(1, 10)}" if random.random() > 0.3 else "",
+                ""
+            ]
+            writer.writerow(alert)
+            alerts.append(alert_id)
+            alert_id += 1
+
+print(f"✓ Generated {len(alerts):,} alerts")
+
+print("[7/10] Generating fraud cases...")
+with open(DATA_DIR / "fraud_cases.csv", "w", newline="", encoding="utf-8") as f:
+    writer = csv.writer(f)
+    writer.writerow(["case_id", "customer_id", "case_number", "fraud_type_id", "case_status",
+                     "total_loss_amount", "recovered_amount", "opened_date", "closed_date",
+                     "assigned_investigator", "priority"])
+
+    case_id = 1
+    for i in range(len(fraudulent_transactions) // 10):  # About 10% of fraudulent transactions become cases
+        case = [
+            case_id,
+            random.choice(customers),
+            f"CASE-{datetime.now().year}-{case_id:06d}",
+            random.randint(1, 20),  # fraud_type_id
+            random.choice(["OPEN", "INVESTIGATING", "CLOSED", "ESCALATED"]),
+            round(random.uniform(500, 50000), 2),
+            round(random.uniform(0, 10000), 2),
+            random_datetime(start_date, end_date).strftime("%Y-%m-%d %H:%M:%S"),
+            random_datetime(start_date, end_date).strftime("%Y-%m-%d %H:%M:%S") if random.random() > 0.4 else "",
+            f"investigator{random.randint(1, 5)}",
+            random.choice(["LOW", "MEDIUM", "HIGH", "CRITICAL"])
+        ]
+        writer.writerow(case)
+        case_id += 1
+
+print(f"✓ Generated {case_id - 1:,} fraud cases")
+
+print("[8/10] Generating devices...")
+with open(DATA_DIR / "devices.csv", "w", newline="", encoding="utf-8") as f:
+    writer = csv.writer(f)
+    writer.writerow(["device_id", "customer_id", "device_fingerprint", "device_type",
+                     "os_type", "browser", "first_seen", "last_seen", "is_trusted"])
+
+    for i in range(1, 75001):
+        device = [
+            i,
+            random.choice(customers),
+            f"fp_{random.randint(100000000, 999999999)}",
+            random.choice(["MOBILE", "DESKTOP", "TABLET"]),
+            random.choice(["iOS", "Android", "Windows", "macOS", "Linux"]),
+            random.choice(["Chrome", "Safari", "Firefox", "Edge", "Opera"]),
+            random_datetime(datetime(2022, 1, 1), datetime(2024, 1, 1)).strftime("%Y-%m-%d %H:%M:%S"),
+            random_datetime(datetime(2024, 1, 1), datetime(2024, 12, 31)).strftime("%Y-%m-%d %H:%M:%S"),
+            random.choice([True, True, True, False])
+        ]
+        writer.writerow(device)
+
+        if i % 10000 == 0:
+            print(f"  Generated {i:,} devices...")
+
+print(f"✓ Generated 75,000 devices")
+
+print("[9/10] Generating customer segments...")
+with open(DATA_DIR / "customer_segments.csv", "w", newline="", encoding="utf-8") as f:
+    writer = csv.writer(f)
+    writer.writerow(["segment_id", "segment_name", "segment_description", "criteria_definition",
+                     "min_clv", "max_clv"])
+
+    segments = [
+        (1, "VIP", "Top tier customers", '{"criteria": "clv > 50000"}', 50000, 999999),
+        (2, "High Value", "High spending customers", '{"criteria": "clv > 10000"}', 10000, 50000),
+        (3, "Regular", "Standard active customers", '{"criteria": "clv > 1000"}', 1000, 10000),
+        (4, "New", "Recently acquired customers", '{"criteria": "tenure < 90"}', 0, 999999),
+        (5, "At Risk", "Customers showing signs of churn", '{"criteria": "activity_score < 30"}', 0, 999999),
+        (6, "Dormant", "Inactive customers", '{"criteria": "last_activity > 180"}', 0, 999999),
+    ]
+
+    for segment in segments:
+        writer.writerow(segment)
+
+print(f"✓ Generated {len(segments)} customer segments")
+
+print("[10/10] Generating customer lifetime value...")
+with open(DATA_DIR / "customer_lifetime_value.csv", "w", newline="", encoding="utf-8") as f:
+    writer = csv.writer(f)
+    writer.writerow(["clv_id", "customer_id", "segment_id", "total_revenue", "total_transactions",
+                     "average_transaction_value", "customer_tenure_days", "predicted_clv",
+                     "calculation_date"])
+
+    for i in range(1, NUM_CUSTOMERS + 1):
+        total_trans = random.randint(1, 500)
+        total_rev = round(random.uniform(100, 100000), 2)
+
+        clv = [
+            i,
+            i,  # customer_id
+            random.randint(1, 6),  # segment_id
+            total_rev,
+            total_trans,
+            round(total_rev / total_trans, 2),
+            random.randint(30, 1500),
+            round(total_rev * random.uniform(1.2, 3.0), 2),
+            datetime.now().strftime("%Y-%m-%d")
+        ]
+        writer.writerow(clv)
+
+        if i % 10000 == 0:
+            print(f"  Generated {i:,} CLV records...")
+
+print(f"✓ Generated {NUM_CUSTOMERS:,} CLV records")
+
+print()
+print("=" * 80)
+print("✓ CSV Data Generation Complete!")
+print("=" * 80)
+print(f"CSV files saved to: {DATA_DIR}")
+print()
+print("Generated files:")
+print(f"  - customers.csv ({NUM_CUSTOMERS:,} rows)")
+print(f"  - accounts.csv ({NUM_ACCOUNTS:,} rows)")
+print(f"  - merchants.csv ({NUM_MERCHANTS:,} rows)")
+print(f"  - cards.csv ({NUM_CARDS:,} rows)")
+print(f"  - transactions.csv ({NUM_TRANSACTIONS:,} rows)")
+print(f"  - alerts.csv ({len(alerts):,} rows)")
+print(f"  - fraud_cases.csv")
+print(f"  - devices.csv (75,000 rows)")
+print(f"  - customer_segments.csv ({len(segments)} rows)")
+print(f"  - customer_lifetime_value.csv ({NUM_CUSTOMERS:,} rows)")
+print()
+print("Next step: Run the CSV import script to load data into PostgreSQL")
+print("=" * 80)
+
