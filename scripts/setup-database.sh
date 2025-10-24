@@ -157,13 +157,45 @@ fraud_type_count=$(execute_sql "SELECT COUNT(*) FROM fraud_types;" | grep -E '^\
 echo -e "Fraud types: ${GREEN}$fraud_type_count${NC}"
 
 echo ""
+echo -e "${BLUE}============================================================================${NC}"
+echo -e "${YELLOW}Running verification queries...${NC}"
+echo -e "${BLUE}============================================================================${NC}"
+echo ""
+
+# Query 1: Show sample countries
+echo -e "${YELLOW}[1/5] Sample countries:${NC}"
+execute_sql "SELECT country_code, country_name FROM countries ORDER BY country_name LIMIT 5;"
+echo ""
+
+# Query 2: Show merchant categories
+echo -e "${YELLOW}[2/5] Sample merchant categories:${NC}"
+execute_sql "SELECT category_code, category_name FROM merchant_categories ORDER BY category_name LIMIT 5;"
+echo ""
+
+# Query 3: Show transaction types
+echo -e "${YELLOW}[3/5] Transaction types:${NC}"
+execute_sql "SELECT type_code, type_name, description FROM transaction_types ORDER BY type_name;"
+echo ""
+
+# Query 4: Show fraud types
+echo -e "${YELLOW}[4/5] Fraud types:${NC}"
+execute_sql "SELECT fraud_type_code, fraud_type_name, severity FROM fraud_types ORDER BY severity DESC, fraud_type_name;"
+echo ""
+
+# Query 5: Show customer segments
+echo -e "${YELLOW}[5/5] Customer segments:${NC}"
+execute_sql "SELECT segment_code, segment_name, description FROM customer_segments ORDER BY segment_name;"
+echo ""
+
 echo -e "${GREEN}============================================================================${NC}"
 echo -e "${GREEN}✓ Database setup completed successfully!${NC}"
 echo -e "${GREEN}============================================================================${NC}"
 echo ""
 echo -e "${YELLOW}Next steps:${NC}"
-echo -e "1. Generate test data: ${BLUE}./scripts/generate-data.sh${NC}"
-echo -e "2. Access DB-UI at: ${BLUE}http://localhost:3000${NC}"
+echo -e "1. Generate test data: ${BLUE}./data/generate_data.sh${NC}"
+echo -e "2. Access pgAdmin at: ${BLUE}http://localhost:3000${NC}"
+echo -e "   - Email: ${GREEN}admin@example.com${NC}"
+echo -e "   - Password: ${GREEN}SecurePass123!${NC}"
 echo -e "3. Start learning SQL with exercises in: ${BLUE}./exercises/${NC}"
 echo ""
 

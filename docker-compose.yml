@@ -34,7 +34,7 @@ services:
     image: dpage/pgadmin4:latest
     container_name: business_analytics_ui
     environment:
-      PGADMIN_DEFAULT_EMAIL: admin@businessanalytics.local
+      PGADMIN_DEFAULT_EMAIL: admin@example.com
       PGADMIN_DEFAULT_PASSWORD: SecurePass123!
       PGADMIN_CONFIG_SERVER_MODE: 'False'
       PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED: 'False'

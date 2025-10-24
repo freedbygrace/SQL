@@ -142,7 +142,7 @@ The script shows progress for each step:
 
 1. Open your browser to: **http://localhost:3000**
 2. **Login:**
-   - Email: `admin@businessanalytics.local`
+   - Email: `admin@example.com`
    - Password: `SecurePass123!`
 3. **First time setup - Add Server:**
    - Click "Add New Server"

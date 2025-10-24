@@ -163,7 +163,7 @@ http://localhost:3000
 ```
 
 **Login credentials:**
-- Email: `admin@businessanalytics.local`
+- Email: `admin@example.com`
 - Password: `SecurePass123!`
 
 **First time setup:**
