@@ -50,28 +50,33 @@ import_csv() {
     local table_name=$1
     local csv_file=$2
     local row_count_var=$3
-    
+
     if [ ! -f "$csv_file" ]; then
         echo -e "${RED}✗ CSV file not found: $csv_file${NC}"
         return 1
     fi
-    
+
     echo -e "${YELLOW}Importing $table_name...${NC}"
-    
+
+    # Convert to absolute path
+    local abs_csv_file=$(cd "$(dirname "$csv_file")" && pwd)/$(basename "$csv_file")
+
     # Use COPY command for bulk import
-    # Note: COPY FROM STDIN with CSV header
-    local result=$(psql -h "$DB_HOST" -p "$DB_PORT" -U "$DB_USER" -d "$DB_NAME" \
-        -c "\COPY $table_name FROM '$csv_file' WITH (FORMAT csv, HEADER true, NULL '')" 2>&1)
-    
-    if [ $? -eq 0 ]; then
+    # Note: \COPY works from client side and can read local files
+    psql -h "$DB_HOST" -p "$DB_PORT" -U "$DB_USER" -d "$DB_NAME" \
+        -c "\COPY $table_name FROM '$abs_csv_file' WITH (FORMAT csv, HEADER true, NULL '')" 2>&1
+
+    local exit_code=$?
+
+    if [ $exit_code -eq 0 ]; then
         # Get row count
         local count=$(execute_sql "SELECT COUNT(*) FROM $table_name;" | sed -n 3p | tr -d ' ')
         eval "$row_count_var=$count"
         echo -e "${GREEN}✓ Imported $count rows into $table_name${NC}"
         return 0
     else
-        echo -e "${RED}✗ Failed to import $table_name${NC}"
-        echo -e "${RED}$result${NC}"
+        echo -e "${RED}✗ Failed to import $table_name (exit code: $exit_code)${NC}"
+        echo -e "${YELLOW}CSV file: $abs_csv_file${NC}"
         return 1
     fi
 }
