@@ -195,9 +195,36 @@ echo ""
 
 # Generate CSV files using Python
 echo -e "${CYAN}Generating CSV files...${NC}"
-python3 scripts/generate_csv_data.py
+
+# Check if Python is available
+if ! command -v python3 >/dev/null 2>&1 && ! command -v python >/dev/null 2>&1; then
+    echo -e "${RED}✗ Python 3 is not installed${NC}"
+    echo ""
+    echo -e "${YELLOW}Python 3 is required for CSV data generation.${NC}"
+    echo ""
+    echo -e "${CYAN}On Windows:${NC}"
+    echo -e "  1. Open Microsoft Store and search for 'Python 3.12'"
+    echo -e "  2. Or download from: ${GREEN}https://www.python.org/downloads/${NC}"
+    echo -e "  3. Make sure to check 'Add Python to PATH' during installation"
+    echo -e "  4. Close and reopen PowerShell"
+    echo -e "  5. Re-run: ${GREEN}./deploy.sh${NC}"
+    echo ""
+    echo -e "${CYAN}On Linux/macOS:${NC}"
+    echo -e "  Run: ${GREEN}./scripts/install-dependencies.sh${NC}"
+    echo ""
+    exit 1
+fi
+
+# Try python3 first, fall back to python
+if command -v python3 >/dev/null 2>&1; then
+    python3 scripts/generate_csv_data.py
+else
+    python scripts/generate_csv_data.py
+fi
+
 if [ $? -ne 0 ]; then
     echo -e "${RED}✗ CSV generation failed${NC}"
+    echo -e "${YELLOW}Check the error message above for details${NC}"
     exit 1
 fi
 

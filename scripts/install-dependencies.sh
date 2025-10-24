@@ -81,10 +81,26 @@ install_python() {
             fi
             ;;
         windows)
-            echo -e "${YELLOW}On Windows, please install Python 3 manually:${NC}"
-            echo -e "  1. Download from: https://www.python.org/downloads/"
-            echo -e "  2. Or use WSL2 with Ubuntu"
-            echo -e "  3. Make sure to check 'Add Python to PATH' during installation"
+            echo -e "${YELLOW}⚠ Windows detected - Python 3 installation required${NC}"
+            echo ""
+            echo -e "${CYAN}Option 1: Microsoft Store (Easiest)${NC}"
+            echo -e "  1. Open Microsoft Store"
+            echo -e "  2. Search for 'Python 3.12' or 'Python 3.11'"
+            echo -e "  3. Click 'Get' or 'Install'"
+            echo -e "  4. Close and reopen PowerShell"
+            echo ""
+            echo -e "${CYAN}Option 2: Official Installer${NC}"
+            echo -e "  1. Visit: ${GREEN}https://www.python.org/downloads/${NC}"
+            echo -e "  2. Download Python 3.12 or later"
+            echo -e "  3. Run installer"
+            echo -e "  4. ✅ CHECK 'Add Python to PATH' during installation"
+            echo -e "  5. Close and reopen PowerShell"
+            echo ""
+            echo -e "${CYAN}After installation, verify:${NC}"
+            echo -e "  ${GREEN}python --version${NC}  (should show Python 3.x.x)"
+            echo ""
+            echo -e "${YELLOW}Then re-run: ./deploy.sh${NC}"
+            echo ""
             exit 1
             ;;
         *)
